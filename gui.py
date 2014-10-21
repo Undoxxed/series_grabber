@@ -16,6 +16,7 @@ from PySide.QtGui import QApplication, QMainWindow, QTextEdit,\
 
 from PySide import QtGui, QtCore
 
+
 class Example(QtGui.QWidget):
 
     def __init__(self):
@@ -38,7 +39,7 @@ class Example(QtGui.QWidget):
 #         self.setLayout(hbox)
 #         self.setWindowTitle('Image viewer')
 #         self.show()  
-              
+
         self.img_fold = r"data/pictures"
 
         self.widget_layout = QtGui.QGridLayout(self)
@@ -60,6 +61,7 @@ class Example(QtGui.QWidget):
         self.setGeometry(300, 300, 1280, 720)
         self.setWindowTitle('Image viewer')
         self.show()
+
 
 def main():
 

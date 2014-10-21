@@ -1,3 +1,5 @@
-Pyperclip (data/dlls/pyperclip-1.5.4)
-
+Pyperclip
 Requests
+tv_db
+PySide + qt + PySide install(or folder in Tools)
+Pillow + packs
