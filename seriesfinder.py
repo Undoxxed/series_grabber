@@ -16,17 +16,32 @@ def get_series_html():
     return html.text
 
 
+def print_whole_series(series):
+    t = tvdb_api.Tvdb(banners = True)
+    t.apikey = getAPI()
+    
+    for i in range(1, len(t[series].keys())):
+        print "*" * 100
+        print t[series]['seriesname'] + " Season " + str(i) + " overview:"
+        print "*" * 100
+        for o in range (1, len(t[series][int(i)].keys())):
+            print str(o) + "." + t[series][int(i)][int(o)]['episodename']
+
+
 def search_series():
     html_text = get_series_html()
     startpos = html_text.find("<h2>Serien")
     string = "Which series would you like to add to the library?\n"
-    userchoice = raw_input(string).replace(' ', '.').lower()
+    userchoice = raw_input(string)
+    userchoice = userchoice.title()
     seriespos = html_text.find(userchoice, startpos)
     link = helper.get_last_link_before_pos(seriespos, html_text)
     if check_link(link):
         print "Series available under the following link: " + link
         series_dict = helper.series_dict()
         series = userchoice.replace(' ', '.')
+        if series not in series_dict.keys():
+            series_dict[series] = {}    
         series_dict[series]["link"] = link
         helper.update_series_dict(series_dict)
         print series

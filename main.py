@@ -14,11 +14,13 @@ from PIL import Image
 #helper.download_series("The.Big.Bang.Theory", download_dict)
 #helper.init_json("test")
 #grabber.action()
-dict_series = helper.series_dict()
-for series in dict_series:
-    print seriesfinder.get_series_info(series)
-    seriesfinder.get_image(series)
-
-gui.main()
-
+# dict_series = helper.series_dict()
+# for series in dict_series:
+#     print seriesfinder.get_series_info(series)
+#     seriesfinder.get_image(series)
+#  
+# gui.main()
+#seriesfinder.search_series()
 #print seriesfinder.get_air_date("The.Simpsons", 26, 5)
+seriesfinder.print_whole_series("The Big Bang Theory")
+print "\n"

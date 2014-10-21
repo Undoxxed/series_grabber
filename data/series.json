@@ -3,13 +3,19 @@
         "quality": "sd", 
         "episode": "S26E02", 
         "language": "en"
-    },
+    }, 
     "Scandal": {
         "quality": "sd", 
         "episode": "S04E01", 
         "language": "en"
-    },
-      "The.Big.Bang.Theory": {
+    }, 
+    "Breaking.Bad": {
+        "link": "http://serienjunkies.org/serie/breaking-bad/"
+    }, 
+    "Family.Guy": {
+        "link": "http://serienjunkies.org/serie/family-guy/"
+    }, 
+    "The.Big.Bang.Theory": {
         "quality": "sd", 
         "episode": "S04E22", 
         "language": "en"
