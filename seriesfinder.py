@@ -7,6 +7,7 @@ import urllib
 import os.path
 from mhlib import PATH
 
+print "Hallo hier bin ich!"
 
 def get_series_html():
     link = "http://serienjunkies.org/?cat=0&showall"
