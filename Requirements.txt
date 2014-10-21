@@ -1,0 +1,3 @@
+Pyperclip (data/dlls/pyperclip-1.5.4)
+
+Requests

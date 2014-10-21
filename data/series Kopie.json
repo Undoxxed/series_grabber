@@ -1,0 +1,27 @@
+{
+    "The.Simpsons": {
+        "quality": "sd", 
+        "episode": "S26E03", 
+        "language": "en"
+    }, 
+    "The.Big.Bang.Theory": {
+        "quality": "sd", 
+        "episode": "S08E05", 
+        "language": "en"
+    }, 
+    "The.Blacklist": {
+        "quality": "sd", 
+        "episode": "S02E04", 
+        "language": "en"
+    }, 
+    "Die.Simpsons": {
+        "quality": "sd", 
+        "episode": "S25E09", 
+        "language": ""
+    }, 
+    "Two.And.A.Half.Men": {
+        "quality": "sd", 
+        "episode": "S09E10", 
+        "language": "en"
+    }
+}
