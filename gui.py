@@ -39,7 +39,7 @@ class Example(QtGui.QWidget):
 #         self.setWindowTitle('Image viewer')
 #         self.show()  
               
-        self.img_fold = r"C:\Users\roman\Documents\Python\Projekte\serien grabber\data\pictures"
+        self.img_fold = r"data/pictures"
 
         self.widget_layout = QtGui.QGridLayout(self)
         self.scrollarea = QtGui.QScrollArea()
