@@ -45,6 +45,11 @@ def init_download_list(series, hosterlink, rel_name):
     json.dump(download_dic, out_file, indent=4)
     out_file.close()
 
+#   Updates series.json with given dictionary
+def update_series_dict(series_dict):
+    out_file = open("data/series.json", 'w')
+    json.dump(series_dict, out_file, indent=4)
+    out_file.close()
 
 #   Returns series.json as dictionary
 def series_dict():

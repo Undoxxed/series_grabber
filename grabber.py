@@ -195,19 +195,6 @@ def check_all():
         search_for_new_episodes(str(i))
 
 
-def download_all():
-    dict_index = index_dict()
-    check_all()
-    for series in dict_index:
-        download_series(series)
-
-
-def action():
-    check_all()
-    print_index()
-    user_choice()
-
-
 def background_action():
     check_all()
     download_all()
@@ -219,7 +206,39 @@ def background_action():
     update_index_json(dict_index)
 
 
+def download_all():
+    dict_index = index_dict()
+    check_all()
+    for series in dict_index:
+        download_series(series)
+
+
 ''' User Interaction & Output '''
+
+
+#ask if one worked if answer is no
+def user_choice():
+    dict_index = index_dict()
+    string = ("Type a index to download all new episodes of that series,\n" +
+              "or type 'a' or 'all' to download all found new episodes,\n" +
+              "or type 'x' or 'exit' or 'quit' to quit.\n")
+    userchoice = raw_input(string)
+    if userchoice == "a" or userchoice == "all":
+        download_all()
+        ask_if_all_downloads_correct()
+    elif userchoice == "x" or userchoice == "quit" or userchoice == "exit":
+        exit("BahBah :)")
+    else:
+        try:
+            seriesname = dict_index.items()[(int(userchoice) - 1)][0]
+            print "Sending", seriesname, "to jDownloader."
+            download_series(seriesname)
+            ask_if_download_correct(seriesname)
+
+        except:
+            if dict_index == {}:
+                exit("Nothing new.Bye :)")
+            user_choice()
 
 
 def print_index():
@@ -255,31 +274,6 @@ def print_index():
         except:
             pass
     print "\n"
-
-
-#ask if one worked if answer is no
-def user_choice():
-    dict_index = index_dict()
-    string = ("Type a index to download all new episodes of that series,\n" +
-              "or type 'a' or 'all' to download all found new episodes,\n" +
-              "or type 'x' or 'exit' or 'quit' to quit.\n")
-    userchoice = raw_input(string)
-    if userchoice == "a" or userchoice == "all":
-        download_all()
-        ask_if_all_downloads_correct()
-    elif userchoice == "x" or userchoice == "quit" or userchoice == "exit":
-        exit("BahBah :)")
-    else:
-        try:
-            seriesname = dict_index.items()[(int(userchoice) - 1)][0]
-            print "Sending", seriesname, "to jDownloader."
-            download_series(seriesname)
-            ask_if_download_correct(seriesname)
-
-        except:
-            if dict_index == {}:
-                exit("Nothing new.Bye :)")
-            user_choice()
 
 
 def download_series(series):
@@ -330,3 +324,9 @@ def ask_if_all_downloads_correct():
     dict_index = index_dict()
     for series in dict_index:
         ask_if_download_correct(series)
+
+
+def action():
+    check_all()
+    print_index()
+    user_choice()

@@ -80,6 +80,8 @@ def get_season_link(series):
     searchstring = "; Season " + season
     if searchstring in html.text:
         pos = html.text.find(searchstring)
+    else:
+        print "Error"
     link = helper.get_last_link_before_pos(pos, html.text)
     return link
 
@@ -120,6 +122,7 @@ def get_last_episode(series):
             continue
         else:
             break
+    print "Done"
 
 
 def get_release_name_from_series(html, start_pos):
