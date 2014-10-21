@@ -160,6 +160,17 @@ def get_air_date(series, season, episode):
     return air_date
 
 
+def get_search_results(searchstring):
+    t = tvdb_api.Tvdb(interactive = True, select_first=False)
+    t.apikey = getAPI()
+    search_results = t.search(searchstring)
+    print "Search results for <" + searchstring + ">:"
+    search_result = ""
+    for i in range(0,len(search_results)):
+        search_result += str(i+1) + ". " + search_results[i]['seriesname'] + "\n"
+    return search_result
+
+
 def get_image_from_tvdb(series):
     t = tvdb_api.Tvdb(banners = True)
     t.apikey = getAPI()
