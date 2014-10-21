@@ -8,6 +8,7 @@ import os.path
 from mhlib import PATH
 
 print "Hallo hier bin ich!"
+print "This is my sentence"
 
 def get_series_html():
     link = "http://serienjunkies.org/?cat=0&showall"
