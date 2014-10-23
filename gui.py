@@ -1,74 +1,78 @@
-#!/usr/bin/env python
-
 import sys
+from PySide.QtCore import *
+from PySide.QtGui import *
 import helper
 import seriesfinder
-import grabber
-import seriesgrabber
-import os
-import platform
-import PySide
-
-from ui_untitled import Ui_Dialog
-
-from PySide.QtGui import QApplication, QMainWindow, QTextEdit,\
-                         QPushButton,  QMessageBox
-
-from PySide import QtGui, QtCore
 
 
-class Example(QtGui.QWidget):
+qt_app = QApplication(sys.argv)
 
+
+ 
+class HelloWorldApp(QWidget):
+    ''' A Qt application that displays the text, "Hello, world!" '''
+    
     def __init__(self):
-        super(Example, self).__init__()
+        # Initialize the object as a QLabel
+        QWidget.__init__(self)
+ 
+        # Salutation
+        self.setMinimumSize(400, 185)
+        self.setWindowTitle('SeriesGrabber v0.1')
+        
+        # Layouts
+        self.layout = QVBoxLayout()
+        self.banner_descr_layout = QFormLayout()
+        self.status_rating_layout = QHBoxLayout()
+        
+        # ComboBox for series in series_dict
+        self.series_box = QComboBox(self)
+        series_dict = helper.series_dict()  
+        for i in range (0, len(series_dict.keys())):
+            seriesname = series_dict.keys()[i].replace('.', ' ')
+            self.series_box.addItem(seriesname) 
+        self.banner_descr_layout.addRow(self.series_box)
+  
+        # Banner
+        self.banner = QLabel(self)
+        series = self.series_box.currentText().replace(' ', '.')
+        bannerpath = seriesfinder.get_image(series)
+        self.banner.setPixmap(bannerpath)
+        self.banner_descr_layout.addRow(self.banner)
+        
+        # Description
+        descr_str = seriesfinder.get_description(self.series_box.currentText())
+        self.description = QLabel(descr_str, self)
+        self.description.setWordWrap(True)
+        self.banner_descr_layout.addRow(self.description)
+        
+        # Connect ComboBox
+        self.series_box.currentIndexChanged[str].connect(self.refresh_series)
+        
+        
+        # Add to final layout
+        self.layout.addLayout(self.banner_descr_layout)
+        self.layout.addStretch(1)
+        self.setLayout(self.layout)
 
-        self.initUI()
-
-    def initUI(self):
-#         hbox = QtGui.QHBoxLayout(PySide.QtGui.QWidget)      
-#         series_dict = helper.series_dict()
-#         count = 0
-#         for series in series_dict:
-#             print series
-#             path = seriesfinder.get_image(series)
-#             pixmap = QtGui.QPixmap(path) 
-#             lbl = QtGui.QLabel(self)
-#             lbl.setPixmap(pixmap)
-#             hbox.addWidget(lbl)
-#             count+=1
-#         self.setLayout(hbox)
-#         self.setWindowTitle('Image viewer')
-#         self.show()  
-
-        self.img_fold = r"data/pictures"
-
-        self.widget_layout = QtGui.QGridLayout(self)
-        self.scrollarea = QtGui.QScrollArea()
-        self.scrollarea.setWidgetResizable(True)
-        self.widget_layout.addWidget(self.scrollarea)
-        self.widget = QtGui.QWidget()
-        self.layout = QtGui.QVBoxLayout(self.widget)
-        self.scrollarea.setWidget(self.widget)
-
-        self.layout.setAlignment(QtCore.Qt.AlignLeft)
-
-        for img in os.listdir(self.img_fold):
-            img_path = os.path.join(self.img_fold, img)
-            pixmap = QtGui.QPixmap(img_path)
-            lbl = QtGui.QLabel(self)
-            lbl.setPixmap(pixmap)
-            self.layout.addWidget(lbl)
-        self.setGeometry(300, 300, 1280, 720)
-        self.setWindowTitle('Image viewer')
+    
+    @Slot()
+    def refresh_series(self):
+        series = self.series_box.currentText().replace(' ', '.')
+        bannerpath = seriesfinder.get_image(series)
+        self.banner.setPixmap(bannerpath)
+        descr_str = seriesfinder.get_description(self.series_box.currentText())
+        self.description.setText(descr_str)
+        
+    @Slot()    
+    def changebanner(self):
+        print "Test"
+        
+        
+    def run(self):
+        ''' Show the application window and start the main event loop '''
         self.show()
+        qt_app.exec_()
 
-
-def main():
-
-    app = QtGui.QApplication(sys.argv)
-    ex = Example()
-    sys.exit(app.exec_())
-
-
-if __name__ == '__main__':
-    main()
+app = HelloWorldApp()
+app.run()

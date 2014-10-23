@@ -22,5 +22,7 @@ from PIL import Image
 # gui.main()
 #seriesfinder.search_series()
 #print seriesfinder.get_air_date("The.Simpsons", 26, 5)
-seriesfinder.print_whole_series("The Big Bang Theory")
-print "\n"
+#string = seriesfinder.print_whole_series("The Big Bang Theory")
+#print string
+#print "\n"
+#seriesfinder.get_image("The.Simpsons")

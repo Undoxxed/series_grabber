@@ -7,9 +7,6 @@ import urllib
 import os.path
 from mhlib import PATH
 
-print "Hallo hier bin ich!"
-print "This is my sentence"
-
 def get_series_html():
     link = "http://serienjunkies.org/?cat=0&showall"
     html = requests.get(link)
@@ -17,17 +14,20 @@ def get_series_html():
 
 
 def print_whole_series(series):
+    print "TEST"
     t = tvdb_api.Tvdb(banners = True)
     t.apikey = getAPI()
     
     for i in range(1, len(t[series].keys())):
-        print "*" * 100
-        print t[series]['seriesname'] + " Season " + str(i) + " overview:"
-        print "*" * 100
+        series_info = "*" * 100 + "\n"
+        series_info += t[series]['seriesname'] + " Season " + str(i) + " overview:\n"
+        series_info += "*" * 100 + "\n"
         for o in range (1, len(t[series][int(i)].keys())):
-            print str(o) + "." + t[series][int(i)][int(o)]['episodename']
-
-
+            series_info += str(o) + "." + t[series][int(i)][int(o)]['episodename']+"\n"
+        print series_info
+        ## Print "None" at the end
+    
+    
 def search_series():
     html_text = get_series_html()
     startpos = html_text.find("<h2>Serien")
