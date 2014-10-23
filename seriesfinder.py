@@ -145,12 +145,18 @@ def get_status(series):
 
 
 def get_seasons(series):
-    t = tvdb_api.Tvdb(banners=True)
+    t = tvdb_api.Tvdb()
     t.apikey = getAPI()
     series = series.replace('.', ' ').lower()
     seasons = t[series].keys()
     return seasons
 
+def get_episodes(series, season):
+    t = tvdb_api.Tvdb()
+    t.apikey = getAPI()
+    series = series.replace('.', ' ').lower()
+    episodes = t[series][season].keys()
+    return episodes
 
 def get_no_of_episodes(series, season):
     t = tvdb_api.Tvdb(banners=True)

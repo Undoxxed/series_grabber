@@ -88,32 +88,32 @@ class HelloWorldApp(QWidget):
         current_sel = self.series_box.currentText()
         seasons = seriesfinder.get_seasons(current_sel)
         for key in seasons:
-            self.season_box.addItem(str(key))
+            if key != 0:
+                self.season_box.addItem(str(key))
         
         # Episode list
-        current_series = self.season_box.currentText()
-        current_season = self.series_box.currentText()
-        seasons = seriesfinder.get_seasons(current_series)
+        current_series = self.series_box.currentText()
+        current_season = self.season_box.currentText()
+        episodes = seriesfinder.get_episodes(current_series, int(current_season))
         self.overview_label = QLabel(self)
         self.overview_label.setText("No.\t\tEpisodename\n" + "_"*125)
-        
         self.episode_list.addRow(self.overview_label)
-        for key in seasons:
-            for i in range(1, len(seasons)):
-                self.episode_info = QLabel(self)
-                episodename = seriesfinder.get_episode_info(current_series, key, i)
-                if i < 10:
-                    i = "0" + str(i)
-                else:
-                    i = str(i)
-                info = i + "\t\t" + episodename
-                self.episode_info.setText(info)
-                self.episode_list.addRow(self.episode_info)
+        #for key in seasons:
+        for i in range(1, len(episodes)):
+            self.episode_info = QLabel(self)
+            episodename = seriesfinder.get_episode_info(current_series, int(current_season), i)
+            if i < 10:
+                i = "0" + str(i)
+            else:
+                i = str(i)
+            info = i + "\t\t" + episodename
+            self.episode_info.setText(info)
+            self.episode_list.addRow(self.episode_info)
         
-        
+                
         # Connect Signals
         self.series_box.currentIndexChanged.connect(self.refresh_series)
-#        self.season_box.currentIndexChanged.connect(self.change_season)
+        self.season_box.currentIndexChanged.connect(self.change_season)
         
         # Add to final layout
         self.layout.addLayout(self.banner_descr_layout)
@@ -144,15 +144,36 @@ class HelloWorldApp(QWidget):
         rating_str = "TVDB Rating: " + seriesfinder.get_rating(current_sel)
         self.rating.setText(rating_str)
 
-#      @Slot()
-#      def change_season(self):
-        
-
+    @Slot()
+    def change_season(self):
+        self.clearLayout(self.episode_list)
+        current_series = self.series_box.currentText()
+        current_season = self.season_box.currentText()
+        episodes = seriesfinder.get_episodes(current_series, int(current_season))
+        for i in range(1, len(episodes)):
+            self.episode_info = QLabel(self)
+            episodename = seriesfinder.get_episode_info(current_series, int(current_season), i)
+            if i < 10:
+                i = "0" + str(i)
+            else:
+                i = str(i)
+            info = i + "\t\t" + episodename
+            self.episode_info.setText(info)
+            self.episode_list.addRow(self.episode_info) 
+    
     @Slot()    
     def changebanner(self):
         print "Test"
-        
-        
+     
+   
+    def clearLayout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                self.clearLayout(child.layout())
+    
     def run(self):
         ''' Show the application window and start the main event loop '''
         self.show()
