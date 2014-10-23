@@ -148,16 +148,22 @@ def get_seasons(series):
     t = tvdb_api.Tvdb(banners=True)
     t.apikey = getAPI()
     series = series.replace('.', ' ').lower()
-    seasons = len(t[series].keys())-1
+    seasons = t[series].keys()
     return seasons
 
 
-def get_episodes(series, season):
+def get_no_of_episodes(series, season):
     t = tvdb_api.Tvdb(banners=True)
     t.apikey = getAPI()
     series = series.replace('.', ' ').lower()
     episodes = len(t[series][season].keys())
     return episodes
+
+def get_episode_info(series, season, episode):
+    t = tvdb_api.Tvdb(banners=True)
+    t.apikey = getAPI()
+    episodeinfo = t[series][season][episode]['episodename']
+    return episodeinfo
 
 
 def get_image(series):
