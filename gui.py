@@ -188,6 +188,8 @@ class HelloWorldApp(QWidget):
             self.episode_info.setText(info)
             self.episode_list.addRow(self.episode_info) 
         self.resize(775, 340 + 19*episodes)
+    
+    
     @Slot()    
     def changebanner(self):
         print "Test"
@@ -205,6 +207,3 @@ class HelloWorldApp(QWidget):
         ''' Show the application window and start the main event loop '''
         self.show()
         qt_app.exec_()
-
-app = HelloWorldApp()
-app.run()

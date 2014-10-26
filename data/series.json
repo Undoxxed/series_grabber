@@ -1,5 +1,5 @@
 {
-    "The.Simpsons": {
+    "The Simpsons": {
         "quality": "sd", 
         "episode": "S26E02", 
         "language": "en"
@@ -9,13 +9,13 @@
         "episode": "S04E01", 
         "language": "en"
     }, 
-    "Breaking.Bad": {
+    "Breaking Bad": {
         "link": "http://serienjunkies.org/serie/breaking-bad/"
     }, 
-    "Family.Guy": {
+    "Family Guy": {
         "link": "http://serienjunkies.org/serie/family-guy/"
     }, 
-    "The.Big.Bang.Theory": {
+    "The Big Bang Theory": {
         "quality": "sd", 
         "episode": "S04E22", 
         "language": "en"

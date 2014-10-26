@@ -7,11 +7,11 @@ import urllib
 import os.path
 from mhlib import PATH
 
+
 def get_series_html():
     link = "http://serienjunkies.org/?cat=0&showall"
     html = requests.get(link)
     return html.text
-
 
 def print_whole_series(series):
     print "TEST"
@@ -76,7 +76,11 @@ def check_link(link):
         return False
     else:
         return True
-
+    
+def return_tvdb():
+    t = tvdb_api.Tvdb(banners = True)
+    t.apikey = getAPI()
+    return t
 
 def getAPI():
     return "5F3B75C374E7D098"
@@ -173,7 +177,7 @@ def get_episode_info(series, season, episode):
 
 
 def get_image(series):
-    path = "data/pictures/" + series.replace('.', '').lower() + ".jpg"
+    path = "data/pictures/" + series.replace('.', '').replace(' ', '').lower() + ".jpg"
     if os.path.exists(path):
         return path
     else:
@@ -193,10 +197,10 @@ def get_search_results(searchstring):
     t = tvdb_api.Tvdb(interactive = True, select_first=False)
     t.apikey = getAPI()
     search_results = t.search(searchstring)
-    print "Search results for <" + searchstring + ">:"
-    search_result = ""
+#     print "Search results for <" + searchstring + ">:"
+    search_result = []
     for i in range(0,len(search_results)):
-        search_result += str(i+1) + ". " + search_results[i]['seriesname'] + "\n"
+         search_result.append(search_results[i]['seriesname'])
     return search_result
 
 
