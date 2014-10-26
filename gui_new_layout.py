@@ -4,6 +4,7 @@ from PySide.QtGui import *
 import helper
 import seriesfinder
 import time
+from types import NoneType
 
 
 grabber_app = QApplication(sys.argv)
@@ -15,7 +16,7 @@ class SeriesGrabberGUI(QWidget):
         QWidget.__init__(self)
         
          # Main Window
-        self.setMinimumSize(900, 720)
+        self.setMinimumSize(1000, 720)
         self.setWindowTitle('SeriesGrabber v0.1')
         
         ''' ADD SERIES WINDOW '''
@@ -43,13 +44,6 @@ class SeriesGrabberGUI(QWidget):
         self.choose_selection.clicked.connect(self.add_series)
         self.search_layout.addWidget(self.choose_selection)
         
-        # Info windows while adding
-        self.infowindow = QWidget()
-        self.infolayout = QVBoxLayout()
-        self.infowindow.resize(200, 300)
-        self.infolabel = QLabel()
-        self.infowindow.setLayout(self.infolayout)
-        
         # Set finder layout
         self.finder.setLayout(self.search_layout)
         
@@ -60,6 +54,7 @@ class SeriesGrabberGUI(QWidget):
         self.layout = QHBoxLayout()
         self.left_side = QVBoxLayout()
         self.right_side = QVBoxLayout()
+        self.episode_list_Layout = QHBoxLayout()
         
         
         ''' Left side of main window '''
@@ -76,6 +71,7 @@ class SeriesGrabberGUI(QWidget):
         self.series_list.addItems(items)
         self.series_list.setFrameStyle(QFrame.Panel | QFrame.Plain)
         self.series_list.setLineWidth(2)
+        self.series_list.setFixedWidth(200)
         self.left_side.addWidget(self.series_list)
         
         # Button to add new series to library
@@ -118,25 +114,6 @@ class SeriesGrabberGUI(QWidget):
         self.season_box.addWidget(self.season_sel)
         self.right_side.addLayout(self.season_box)
         
-        # Episode layout caption
-        self.episode_caption = QHBoxLayout()
-        self.caption1 = QLabel()
-        self.caption2 = QLabel()
-        self.caption3 = QLabel()
-        self.caption1.setText("No.")
-        self.caption2.setText("Episodename")
-        self.caption3.setText("Airdate")
-        self.caption1.setFixedWidth(25)
-        self.caption2.setFixedWidth(419)
-        self.caption3.setFixedWidth(150)
-        self.caption1.setFixedHeight(15)
-        self.caption2.setFixedHeight(15)
-        self.caption3.setFixedHeight(15)
-        self.episode_caption.addWidget(self.caption1)
-        self.episode_caption.addWidget(self.caption2)
-        self.episode_caption.addWidget(self.caption3)
-        self.episode_caption.setAlignment(Qt.AlignTop)
-        self.right_side.addLayout(self.episode_caption)
         
         # Episode line2
         self.line2 = QLabel()
@@ -145,52 +122,79 @@ class SeriesGrabberGUI(QWidget):
         self.line2.setMaximumHeight(5)
         self.right_side.addWidget(self.line2)
         
-        # Episode layout
-        self.episode_layout = QHBoxLayout()
-        self.episodename = QLabel()
-        self.episode_no = QLabel()
-        self.episode_airdate = QLabel()
-        self.episode_download = QPushButton()
-        self.episode_no.setText("01.")
-        self.episode_no.setFixedWidth(25)
-        self.episodename.setText("This is a placeholder episodename")
-        self.episodename.setFixedWidth(419)
-        self.episode_airdate.setText("25.06.2014 (aired)")
-        self.episode_airdate.setFixedWidth(150)
-        self.episode_download.setText("Download now!")
-        self.episode_download.setFixedWidth(150)
-        self.episode_layout.addWidget(self.episode_no)
-        self.episode_layout.addWidget(self.episodename)
-        self.episode_layout.addWidget(self.episode_airdate)
-        self.episode_layout.addWidget(self.episode_download)
-        self.episode_layout.setAlignment(Qt.AlignTop)
-        self.right_side.addLayout(self.episode_layout)
         
-#         # Bottom layout
-#         self.bottom_layout = QHBoxLayout()
-#         self.status = QLabel()
-#         self.rating = QLabel()
-#         self.exit_button = QPushButton() 
-#         self.status.setText("Current status: Continuing")
-#         self.rating.setText("TVDB Rating: 9.0 / 10.0")
-#         self.exit_button.setText("Exit")
-#         self.status.setFixedHeight(40)
-#         self.rating.setFixedHeight(40)
-#         self.exit_button.setFixedHeight(40)
-#         self.exit_button.setFixedWidth(150)
-#         self.bottom_layout.addWidget(self.status)
-#         self.bottom_layout.addWidget(self.rating)
-#         self.bottom_layout.addWidget(self.exit_button)
-#         self.bottom_layout.setAlignment(Qt.AlignBottom)   
-#         self.right_side.addLayout(self.bottom_layout)
+        # Episode layout
+        self.episode_list = QListWidget()
+        self.episode_list_info = QVBoxLayout()
+        self.episode_name = QLabel()
+        self.episode_info_text = QLabel()
+        self.episode_rating = QLabel()
+        self.episode_airdate = QLabel()
+        self.episode_banner = QLabel()
+        self.hline_episode_info = QLabel()
+        self.episode_download = QPushButton()
+        self.episode_download.setText("Download now!")
+        self.episode_info_text.setWordWrap(True)
+        self.episode_banner.setText("(No episode selected)")
+        self.episode_name.setText("Name: No episode selected")
+        self.episode_info_text.setText("Description: No episode selected")
+        self.episode_rating.setText("TVDB-Rating: No episode selected")
+        self.episode_airdate.setText("Originally aired: No episode selected")
+        self.hline_episode_info.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.hline_episode_info.setLineWidth(1)
+        self.hline_episode_info.setFixedHeight(5)
+        fixedWidth = 400
+        self.episode_banner.setFixedWidth(fixedWidth)
+        self.episode_name.setFixedWidth(fixedWidth)
+        self.episode_rating.setFixedWidth(fixedWidth)
+        self.episode_info_text.setFixedWidth(fixedWidth)
+        self.episode_airdate.setFixedWidth(fixedWidth)
+        self.episode_list_info.addWidget(self.episode_banner)
+        self.episode_list_info.addWidget(self.episode_name)
+        self.episode_list_info.addWidget(self.hline_episode_info)
+        self.episode_list_info.addWidget(self.episode_rating)
+        self.episode_list_info.addWidget(self.episode_airdate)
+        self.episode_list_info.addWidget(self.episode_info_text)
+        self.episode_list_info.addWidget(self.episode_download)
+        self.episode_list_info.setAlignment(Qt.AlignTop)
+        self.episode_list_Layout.addWidget(self.episode_list)
+        self.episode_list_Layout.addLayout(self.episode_list_info)
+        self.right_side.addLayout(self.episode_list_Layout)
+        
+        
+        # Bottom layout
+        self.bottom_layout = QHBoxLayout()
+        self.status = QLabel()
+        self.rating = QLabel()
+        self.exit_button = QPushButton() 
+        self.status.setText("Current status: Continuing")
+        self.rating.setText("TVDB Rating: 9.0 / 10.0")
+        self.status.setFrameStyle(QFrame.Box | QFrame.Sunken)
+        self.rating.setFrameStyle(QFrame.Box | QFrame.Sunken)
+        self.status.setAlignment(Qt.AlignCenter)
+        self.rating.setAlignment(Qt.AlignCenter)
+        self.exit_button.setText("Quit")
+        self.status.setFixedHeight(40)
+        self.rating.setFixedHeight(40)
+        self.exit_button.setFixedHeight(40)
+        self.exit_button.setFixedWidth(150)
+        self.bottom_layout.addWidget(self.status)
+        self.bottom_layout.addWidget(self.rating)
+        self.bottom_layout.addWidget(self.exit_button)
+        self.bottom_layout.setAlignment(Qt.AlignBottom)   
+        self.right_side.addLayout(self.bottom_layout)
         
         # Connect signals
         self.series_list.currentItemChanged.connect(self.change_list_selection)
         self.season_sel.currentIndexChanged.connect(self.change_season_selection)
+        self.episode_list.currentItemChanged.connect(self.change_episode_selection)
+        self.exit_button.clicked.connect(self.exit_app)
+       
         # Add layouts to main window
         self.right_side.setAlignment(Qt.AlignTop)
         self.layout.addLayout(self.left_side)
         self.layout.addLayout(self.right_side)
+        
         
         # Set main layout
         self.setLayout(self.layout)
@@ -211,11 +215,13 @@ class SeriesGrabberGUI(QWidget):
     @Slot()
     def add_series(self):
         selected_item = self.search_result_list.currentItem().text()
-        self.infolabel.setText("Adding series: " + selected_item + "...")
-        self.infolayout.addWidget(self.infolabel)
-        self.infowindow.show()
-        seriesfinder.get_image(selected_item)
-        self.infowindow.close()
+        series_dict = helper.series_dict()
+        print selected_item
+        series_dict[selected_item] = ""
+        items = series_dict.keys()
+        self.series_list.clear()
+        self.series_list.addItems(items)
+        helper.update_series_dict(series_dict)
         self.finder.close()
     
     @Slot()
@@ -230,18 +236,94 @@ class SeriesGrabberGUI(QWidget):
             item = str(key)
             self.season_sel.addItem(item)
         
-    
+        current_season = int(self.season_sel.currentText())
+        episodes = seriesfinder.get_episodes(current_sel, current_season)
+        self.episode_list.clear()
+        for episode in episodes:
+            episodename = seriesfinder.get_episode_name(current_sel, current_season, episode)
+            if episode < 10:
+                episode_no = "0" + str(episode)
+            else:
+                episode_no = str(episode)
+            self.episode_list.addItem(episode_no + " " + episodename)
+            
     @Slot()
     def change_season_selection(self):
-        print "Debug"
+        current_sel = self.series_list.currentItem().text()
+        current_season = self.season_sel.currentText()
+        if current_season == '':
+            current_season = 1
+        else:
+            current_season = int(current_season)
+        episodes = seriesfinder.get_episodes(current_sel, current_season)
+        self.episode_list.clear()
+        for episode in episodes:
+            episodename = seriesfinder.get_episode_name(current_sel, current_season, episode)
+            if episode < 10:
+                episode_no = "0" + str(episode)
+            else:
+                episode_no = str(episode)
+            self.episode_list.addItem(episode_no + " " + episodename)
+        
+    @Slot()
+    def change_episode_selection(self):
+        current_series = self.series_list.currentItem().text()
+        current_season = self.season_sel.currentText()
+        if current_season == '':
+            current_season = 1
+        else:
+            current_season = int(current_season) 
+        try:
+            current_episode = int(self.episode_list.currentItem().text()[:2])
+        except:
+            current_episode = 1
+        # Name
+        self.episode_name.setText(seriesfinder.get_episode_name(current_series, current_season, current_episode))
+        
+        # Description
+        description = seriesfinder.get_episode_info(current_series, current_season, current_episode)
+        if description == None:
+            description = "No description available."
+        self.episode_info_text.setText("Description: " + description)
+        
+        # Air date
+        air_date = seriesfinder.get_air_date(current_series, current_season, current_episode)
+        if air_date == None:
+            self.episode_airdate.setText("Originally aired: unknown")
+        else:
+            self.episode_airdate.setText("Originally aired: " + air_date)
+        
+        # Rating
+        rating = seriesfinder.get_episode_rating(current_series, current_season, current_episode)
+        if rating == None:
+            rating = "TVDB-Rating: No rating available for this episode"
+            self.episode_rating.setText(rating)
+        else: 
+            self.episode_rating.setText("TVDB-Rating: " + rating)    
+        
+        # Banner
+        try:
+            banner = seriesfinder.get_episode_image(current_series, current_season, current_episode)
+            self.episode_banner.setPixmap(banner)
+        except:
+            self.episode_banner.setText("(No banner available)")
     
+    @Slot()
+    def exit_app(self):
+        reply = QMessageBox.question(self, 'Message',
+            "Are you sure to quit?", QMessageBox.Yes | 
+            QMessageBox.No, QMessageBox.No)
+        
+        if reply == QMessageBox.Yes:
+            grabber_app.quit()
+       
+        
     @Slot()
     def open_finder(self):
         self.finder.show()
     
     def get_current_selection(self):
         current_sel = self.series_list.currentRow()
-        print current_sel
         return current_sel
         
     def run(self):

@@ -139,6 +139,13 @@ def get_rating(series):
     rating = t[series]['rating']
     return rating
 
+def get_episode_rating(series, season, episode):
+    t = tvdb_api.Tvdb(banners=True)
+    t.apikey = getAPI()
+    series = series.replace('.', ' ').lower()
+    rating = t[series][season][episode]['rating']
+    return rating
+
 
 def get_status(series):
     t = tvdb_api.Tvdb(banners=True)
@@ -169,12 +176,17 @@ def get_no_of_episodes(series, season):
     episodes = len(t[series][season].keys())
     return episodes
 
-def get_episode_info(series, season, episode):
+def get_episode_name(series, season, episode):
     t = tvdb_api.Tvdb(banners=True)
     t.apikey = getAPI()
     episodeinfo = t[series][season][episode]['episodename']
     return episodeinfo
 
+def get_episode_info(series, season, episode):
+    t = tvdb_api.Tvdb(banners=True)
+    t.apikey = getAPI()
+    episodeinfo = t[series][season][episode]['overview']
+    return episodeinfo
 
 def get_image(series):
     path = "data/pictures/" + series.replace('.', '').replace(' ', '').lower() + ".jpg"
@@ -203,6 +215,23 @@ def get_search_results(searchstring):
          search_result.append(search_results[i]['seriesname'])
     return search_result
 
+def get_episode_image_from_tvdb(series, season, episode):
+    t = tvdb_api.Tvdb(banners = True)
+    t.apikey = getAPI()
+    series = series.replace('.', ' ').lower()
+    banner = t[series][season][episode]['filename']
+    link = banner
+    path = "data/pictures/" + series.replace(' ', '').lower() + "s" + str(season) + "e" + str(episode) + ".jpg"
+    urllib.urlretrieve(link, path)
+    return path
+
+def get_episode_image(series, season, episode):
+    path = "data/pictures/" + series.replace('.', '').replace(' ', '').lower() + "s" + str(season) + "e" + str(episode) + ".jpg"
+    if os.path.exists(path):
+        return path
+    else:
+        path = get_episode_image_from_tvdb(series, season, episode)
+        return path
 
 def get_image_from_tvdb(series):
     t = tvdb_api.Tvdb(banners = True)
