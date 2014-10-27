@@ -5,6 +5,8 @@ import helper
 import seriesfinder
 import time
 from types import NoneType
+from tkFont import BOLD
+from django.db.models.deletion import DO_NOTHING
 
 
 grabber_app = QApplication(sys.argv)
@@ -18,6 +20,7 @@ class SeriesGrabberGUI(QWidget):
          # Main Window
         self.setMinimumSize(980, 720)
         self.setWindowTitle('SeriesGrabber v0.1')
+
 
         ''' ADD SERIES WINDOW '''
 
@@ -77,8 +80,8 @@ class SeriesGrabberGUI(QWidget):
         dict_series = helper.series_dict()
         items = dict_series.keys()
         self.series_list.addItems(items)
-        self.series_list.setFrameStyle(QFrame.Panel | QFrame.Plain)
-        self.series_list.setLineWidth(2)
+        #self.series_list.setFrameStyle(QFrame.Panel | QFrame.Plain)
+        #self.series_list.setLineWidth(2)
         self.series_list.setFixedWidth(200)
         self.left_side.addWidget(self.series_list)
 
@@ -210,6 +213,14 @@ class SeriesGrabberGUI(QWidget):
 
         # Set main layout
         self.setLayout(self.layout)
+        
+        ''' StyleSheets '''
+        self.series_list.setStyleSheet("QListWidget { background-color: lightblue; selection-color: blue }")
+        self.series_list.setFont(QFont("Calibri", 12))
+        self.series_list.setMouseTracking(True)
+        self.setStyleSheet("background-color: rgb(240, 172, 15)")
+        self.series_list.setStyleSheet("QListView::item:hover { background: lightblue}")
+        self.wait_window.setStyleSheet("color: rgb(240, 172, 15)")
 
 
     @Slot()
@@ -263,8 +274,12 @@ class SeriesGrabberGUI(QWidget):
         
         
     @Slot()
-    def change_list_selection(self):
+    def change_list_selection(self, current, previous):
         self.wait_window.show()
+        try:
+            previous.setFont(QFont("Calibri", 12))
+        except:
+            DO_NOTHING
         self.wait_label.setText("Loading series data...")
         try:
             current_sel = self.series_list.currentItem().text()
@@ -293,6 +308,7 @@ class SeriesGrabberGUI(QWidget):
                 episode_no = str(episode)
             self.episode_list.addItem(episode_no + " " + episodename)
         self.wait_window.close()
+        current.setFont(QFont("Calibri", 14, QFont.Bold))
    
     
     @Slot()
@@ -376,6 +392,9 @@ class SeriesGrabberGUI(QWidget):
     def open_finder(self):
         self.finder.show()
 
+        
+    def reset_series_list_font(self):
+        self.series_list.setFont(QFont("Calibri", 12))
 
     def get_current_selection(self):
         current_sel = self.series_list.currentRow()

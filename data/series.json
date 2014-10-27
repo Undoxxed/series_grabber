@@ -1,9 +1,10 @@
 {
     "American Dad!": "", 
+    "Monaco Franze": "", 
     "Scrubs": "", 
     "The Big Bang Theory": {
-        "episode": "S04E22", 
         "quality": "sd", 
+        "episode": "S04E22", 
         "language": "en"
     }, 
     "Family Guy": {
@@ -13,13 +14,13 @@
         "link": "http://serienjunkies.org/serie/breaking-bad/"
     }, 
     "Scandal": {
-        "episode": "S04E01", 
         "quality": "sd", 
+        "episode": "S04E01", 
         "language": "en"
     }, 
     "The Simpsons": {
-        "episode": "S26E02", 
         "quality": "sd", 
+        "episode": "S26E02", 
         "language": "en"
     }, 
     "True Detective": ""
