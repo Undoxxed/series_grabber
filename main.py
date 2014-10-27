@@ -25,10 +25,6 @@ from PIL import Image
 #print string
 #print "\n"
 #seriesfinder.get_image("The.Simpsons")
-t = seriesfinder.return_tvdb()
-print t["The Simpsons"][1][1].keys()
-seriesfinder.get_episode_image_from_tvdb("The Simpsons", 1 ,1)
-
 app = gui_new_layout.SeriesGrabberGUI()
 app.run()
 
