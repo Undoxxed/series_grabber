@@ -1,28 +1,24 @@
 {
-    "American Dad!": "", 
-    "Monaco Franze": "", 
-    "Scrubs": "", 
-    "The Big Bang Theory": {
-        "episode": "S04E22", 
-        "quality": "sd", 
-        "language": "en"
-    }, 
-    "Two and a Half Men": "", 
-    "Family Guy": {
-        "link": "http://serienjunkies.org/serie/family-guy/"
-    }, 
-    "Breaking Bad": {
-        "link": "http://serienjunkies.org/serie/breaking-bad/"
-    }, 
-    "Scandal": {
-        "episode": "S04E01", 
-        "quality": "sd", 
-        "language": "en"
-    }, 
     "The Simpsons": {
-        "episode": "S26E02", 
+
+        "last_episode": "S26E02",
         "quality": "sd", 
-        "language": "en"
-    }, 
+        "language": "en",
+        "sj_link": "",
+        "description": "tvdb-description",
+        "status": "",
+        "userstatus": "",
+        "seasons":{
+            "26":{
+                "season_link": "sj-link",
+                "1":{
+                    "episodename": "",
+                    "air_date": "",
+                    "rating": "",
+                    "episode_description": "desc. from tdvb"
+                }
+            }
+        }
+    },
     "True Detective": ""
 }

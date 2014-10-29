@@ -216,8 +216,8 @@ class SeriesGrabberGUI(QWidget):
         self.series_list.setStyleSheet("QListWidget { background-color: lightblue; selection-color: blue }")
         self.series_list.setFont(QFont("Calibri", 12))
         self.series_list.setMouseTracking(True)
-        self.setStyleSheet("background-color: rgb(240, 172, 15)")
-        self.series_list.setStyleSheet("QListView::item:hover { background: lightblue}")
+        self.setStyleSheet("background-color: lightblue")
+        self.series_list.setStyleSheet("QListView::item:hover { background: yellow}")
         self.wait_window.setStyleSheet("color: rgb(240, 172, 15)")
 
 
