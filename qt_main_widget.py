@@ -3,7 +3,6 @@ from PySide.QtGui import *
 from PySide.QtCore import *
 import helper
 import collections
-import extendedqlabel
 import seriesfinder
 
 
