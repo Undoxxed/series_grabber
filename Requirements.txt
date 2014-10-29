@@ -1,5 +1,5 @@
 Pyperclip
 Requests
-tv_db
+tvdb_api
 PySide + qt + PySide install(or folder in Tools)
 Pillow + packs
