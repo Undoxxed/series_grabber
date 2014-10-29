@@ -1,15 +1,15 @@
 import sys
+import collections
 from PySide.QtGui import *
 from PySide.QtCore import *
 import helper
-import collections
 import seriesfinder
 
 
-class MainWindow(QWidget):
+class MainWidget(QWidget):
 
     def __init__(self, parent=None):
-        super(MainWindow, self).__init__(parent)
+        super(MainWidget, self).__init__(parent)
         self.setWindowTitle("Series Grabber")
         self.setGeometry(300, 250, 400, 300)
         self.my_layout()
@@ -49,7 +49,6 @@ class MainWindow(QWidget):
             label.setText(seriesfinder.get_description(series_dict.keys()[i - 1]))
             label.setWordWrap(True)
             layout_serieswidget.addWidget(label)
-
 
             labelx = QLabel()
             labelx.setText("Mittiges Label")
@@ -133,7 +132,7 @@ class MainWindow(QWidget):
 
     def add_button(self, series):
         button = QPushButton(series, self)
-        button.clicked.connect(lambda:self.display_stacked_widget(series))
+        button.clicked.connect(lambda: self.display_stacked_widget(series))
         return button
 
 
@@ -141,7 +140,7 @@ if __name__ == '__main__':
 # Exception Handling
     try:
         myApp = QApplication(sys.argv)
-        mainWindow = MainWindow()
+        mainWindow = MainWidget()
         mainWindow.show()
         myApp.exec_()
         sys.exit(0)
