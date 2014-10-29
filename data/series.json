@@ -3,10 +3,11 @@
     "Monaco Franze": "", 
     "Scrubs": "", 
     "The Big Bang Theory": {
-        "quality": "sd", 
         "episode": "S04E22", 
+        "quality": "sd", 
         "language": "en"
     }, 
+    "Two and a Half Men": "", 
     "Family Guy": {
         "link": "http://serienjunkies.org/serie/family-guy/"
     }, 
@@ -14,13 +15,13 @@
         "link": "http://serienjunkies.org/serie/breaking-bad/"
     }, 
     "Scandal": {
-        "quality": "sd", 
         "episode": "S04E01", 
+        "quality": "sd", 
         "language": "en"
     }, 
     "The Simpsons": {
-        "quality": "sd", 
         "episode": "S26E02", 
+        "quality": "sd", 
         "language": "en"
     }, 
     "True Detective": ""

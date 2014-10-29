@@ -6,8 +6,6 @@ import seriesfinder
 import time
 from types import NoneType
 from tkFont import BOLD
-from django.db.models.deletion import DO_NOTHING
-
 
 grabber_app = QApplication(sys.argv)
 
@@ -279,7 +277,7 @@ class SeriesGrabberGUI(QWidget):
         try:
             previous.setFont(QFont("Calibri", 12))
         except:
-            DO_NOTHING
+            pass
         self.wait_label.setText("Loading series data...")
         try:
             current_sel = self.series_list.currentItem().text()
@@ -405,3 +403,7 @@ class SeriesGrabberGUI(QWidget):
         ''' Show the application window and start the main event loop '''
         self.show()
         grabber_app.exec_()
+
+if __name__ == '__main__':
+    app = SeriesGrabberGUI()
+    app.run()
