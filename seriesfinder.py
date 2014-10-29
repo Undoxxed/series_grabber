@@ -125,32 +125,28 @@ def get_series_info(series):
 
 
 def get_description(series):
-    t = tvdb_api.Tvdb(banners = True)
+    t = tvdb_api.Tvdb()
     t.apikey = getAPI()
-    series = series.replace('.', ' ').lower()
     description = t[series]['overview']
     return description
 
 
 def get_rating(series):
-    t = tvdb_api.Tvdb(banners=True)
+    t = tvdb_api.Tvdb()
     t.apikey = getAPI()
-    series = series.replace('.', ' ').lower()
     rating = t[series]['rating']
     return rating
 
 def get_episode_rating(series, season, episode):
-    t = tvdb_api.Tvdb(banners=True)
+    t = tvdb_api.Tvdb()
     t.apikey = getAPI()
-    series = series.replace('.', ' ').lower()
     rating = t[series][season][episode]['rating']
     return rating
 
 
 def get_status(series):
-    t = tvdb_api.Tvdb(banners=True)
+    t = tvdb_api.Tvdb()
     t.apikey = getAPI()
-    series = series.replace('.', ' ').lower()
     status = t[series]['status']
     return status
 
@@ -183,7 +179,7 @@ def get_episode_name(series, season, episode):
     return episodeinfo
 
 def get_episode_info(series, season, episode):
-    t = tvdb_api.Tvdb(banners=True)
+    t = tvdb_api.Tvdb()
     t.apikey = getAPI()
     episodeinfo = t[series][season][episode]['overview']
     return episodeinfo
@@ -198,9 +194,8 @@ def get_image(series):
 
 
 def get_air_date(series, season, episode):
-    t = tvdb_api.Tvdb(banners = True)
+    t = tvdb_api.Tvdb()
     t.apikey = getAPI()
-    series = series.replace('.', ' ').lower()
     air_date = t[series][season][episode]['firstaired']
     return air_date
 
@@ -209,7 +204,6 @@ def get_search_results(searchstring):
     t = tvdb_api.Tvdb(interactive = True, select_first=False)
     t.apikey = getAPI()
     search_results = t.search(searchstring)
-#     print "Search results for <" + searchstring + ">:"
     search_result = []
     for i in range(0,len(search_results)):
          search_result.append(search_results[i]['seriesname'])

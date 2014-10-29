@@ -4,6 +4,7 @@ import helper
 import seriesfinder
 import gui_new_layout
 from PIL import Image
+import serieshelper
 
 #grabber.action()
 #seriesgrabber.get_last_episode("The.Simpsons")
@@ -25,6 +26,7 @@ from PIL import Image
 #print string
 #print "\n"
 #seriesfinder.get_image("The.Simpsons")
-app = gui_new_layout.SeriesGrabberGUI()
-app.run()
+#app = gui_new_layout.SeriesGrabberGUI()
+#app.run()
+print serieshelper.get_search_results("simpsons")
 
