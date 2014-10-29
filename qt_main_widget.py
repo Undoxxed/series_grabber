@@ -14,58 +14,12 @@ class MainWidget(QWidget):
         self.setGeometry(300, 250, 400, 300)
         self.my_layout()
 
+    '''add left_menu and stacked_widget to layout'''
     def my_layout(self):
         layout = QHBoxLayout()
-
-        '''left_menu'''
         layout.addWidget(self.left_menu())
-
-        '''Stackedwidget - main'''
-        self.stackedwidget = QStackedWidget()
-        main_view = QWidget()
-        layout_main_view = QVBoxLayout()
-        mainlabel = QLabel()
-        mainlabel.setText("Main")
-        layout_main_view.addWidget(mainlabel)
-        main_view.setLayout(layout_main_view)
-        sd = helper.series_dict()
-        series_dict = collections.OrderedDict(sd)
-        self.stackedwidget.addWidget(main_view)
-
-        '''Stackedwidget - series_view'''
-        i = 1
-        while i < len(series_dict.keys()) + 1:
-            serieswidget = QWidget()
-            layout_serieswidget = QVBoxLayout()
-
-            #Serienbanner
-            pixmap = QPixmap(seriesfinder.get_image(series_dict.keys()[i - 1]))
-            lbl = QLabel(self)
-            lbl.setPixmap(pixmap)
-            layout_serieswidget.addWidget(lbl)
-
-            #Description
-            label = QLabel()
-            label.setText(seriesfinder.get_description(series_dict.keys()[i - 1]))
-            label.setWordWrap(True)
-            layout_serieswidget.addWidget(label)
-
-            labelx = QLabel()
-            labelx.setText("Mittiges Label")
-            label2 = QLabel()
-            label2.setText(series_dict.keys()[i - 1])
-            layout_serieswidget.addWidget(labelx)
-            layout_serieswidget.addWidget(label2)
-
-            serieswidget.setLayout(layout_serieswidget)
-            self.stackedwidget.addWidget(serieswidget)
-            i += 1
-
-        self.stackedwidget.setCurrentIndex(0)
-        layout.addWidget(self.stackedwidget)
-        #self.stackedwidget.show()   #?
+        layout.addWidget(self.stacked_widget())
         self.setLayout(layout)
-        return self.stackedwidget
 
     '''Left menu'''
     def left_menu(self):
@@ -117,6 +71,54 @@ class MainWidget(QWidget):
             button.show()
         widget.setLayout(layout)
         return widget
+
+    '''Stacked_widget'''
+    def stacked_widget(self):
+
+        ###stacked_widget - main###
+        self.stackedwidget = QStackedWidget()
+        main_view = QWidget()
+        layout_main_view = QVBoxLayout()
+        mainlabel = QLabel()
+        mainlabel.setText("Main")
+        layout_main_view.addWidget(mainlabel)
+        main_view.setLayout(layout_main_view)
+        self.stackedwidget.addWidget(main_view)
+
+        ###Stackedwidget - series_view###
+        sd = helper.series_dict()
+        series_dict = collections.OrderedDict(sd)
+        i = 1
+        while i < len(series_dict.keys()) + 1:
+            serieswidget = QWidget()
+            layout_serieswidget = QVBoxLayout()
+
+            ###Serienbanner
+            pixmap = QPixmap(seriesfinder.get_image(series_dict.keys()[i - 1]))
+            lbl = QLabel(self)
+            lbl.setPixmap(pixmap)
+            layout_serieswidget.addWidget(lbl)
+
+            ###Description
+            label = QLabel()
+            label.setText(seriesfinder.get_description(series_dict.keys()[i - 1]))
+            label.setWordWrap(True)
+            layout_serieswidget.addWidget(label)
+
+            labelx = QLabel()
+            labelx.setText("Mittiges Label")
+            label2 = QLabel()
+            label2.setText(series_dict.keys()[i - 1])
+            layout_serieswidget.addWidget(labelx)
+            layout_serieswidget.addWidget(label2)
+
+            serieswidget.setLayout(layout_serieswidget)
+            self.stackedwidget.addWidget(serieswidget)
+            i += 1
+
+        self.stackedwidget.setCurrentIndex(0)
+        return self.stackedwidget
+
 
     '''Helper'''
     def change_stackedwidget_to_main(self, a):
