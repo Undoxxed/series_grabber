@@ -4,6 +4,7 @@ import urllib
 
 # External imports
 import tvdb_api
+import requests
 
 # Internal imports
 import helper
@@ -18,12 +19,12 @@ def getAPI():
 
 
 def get_search_results(searchstring):
-    t = tvdb_api.Tvdb(interactive = True, select_first=False)
+    t = tvdb_api.Tvdb(interactive=True, select_first=False)
     t.apikey = getAPI()
     search_results = t.search(searchstring)
     search_result = []
-    for i in range(0,len(search_results)):
-         search_result.append(search_results[i]['seriesname'])
+    for i in range(0, len(search_results)):
+        search_result.append(search_results[i]['seriesname'])
     return search_result
 
 
@@ -86,7 +87,7 @@ def add_series_to_json(series):
     dict_series[series]['userstatus'] = ""
     dict_series[series]['language'] = ""
     dict_series[series]['quality'] = ""
-    dict_series[series]['sj_link'] = ""
+    dict_series[series]['sj_link'] = get_and_save_link(series)
     dict_series[series]['last_episode'] = ""
 
     # Loop through seasons and save in dict
@@ -118,6 +119,7 @@ def get_image(series):
         path = get_image_from_tvdb(series)
         return path
 
+
 def get_image_from_tvdb(series):
     t = tvdb_api.Tvdb(banners=True)
     t.apikey = getAPI()
@@ -144,7 +146,7 @@ def get_highest_rated_banner_id(series):
             key_value = key_rating * key_rating_count
             if key_value > value:
                 value = key_value
-                return key
+                returnkey = key
         except KeyError:
             pass
 
@@ -169,6 +171,7 @@ def get_highest_rated_banner_id(series):
 
     return -1
 
+
 def get_episode_image(series, season, episode):
     directory = "data/pictures/" + series.replace(' ', '').lower()
     if not os.path.exists(directory):
@@ -179,6 +182,7 @@ def get_episode_image(series, season, episode):
     else:
         path = get_episode_image_from_tvdb(series, season, episode)
         return path
+
 
 def get_episode_image_from_tvdb(series, season, episode):
     t = tvdb_api.Tvdb(banners=True)
@@ -201,9 +205,26 @@ def get_images_for_all_episodes(series):
                 get_episode_image(series, season, episode)
 
 
+''' serienjunkies.org Methods '''
 
-#add_series_to_json("The Simpsons")
-#add_series_to_json("Scrubs")
-get_images_for_all_episodes("Scrubs")
-#get_images_for_all_episodes("The Simpsons")
+def get_series_html():
+    link = "http://serienjunkies.org/?cat=0&showall"
+    html = requests.get(link)
+    return html.text
 
+
+def get_and_save_link(series):
+    html_text = get_series_html()
+    startpos = html_text.find("<h2>Serien")
+    searchstring = series.replace('!', '').replace('.', '-')
+    seriespos = html_text.find(searchstring, startpos)
+    link = helper.get_last_link_before_pos(seriespos, html_text)
+
+    if helper.is_link(link):
+        return link
+    else:
+        return "No serienjunkies.org link available."
+
+
+if __name__ == '__main__':
+    add_series_to_json("Scrubs")
