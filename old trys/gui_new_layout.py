@@ -1,8 +1,5 @@
-import sys
-from PySide.QtCore import *
-from PySide.QtGui import *
-import helper
-import seriesfinder
+
+
 import time
 from types import NoneType
 from tkFont import BOLD

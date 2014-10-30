@@ -1,2 +1,2 @@
 serieshelper:
-languagefilter: description, description episode, banner
+languagefilter: description, description episode
