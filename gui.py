@@ -1,7 +1,6 @@
 #Python imports
 import sys
 from functools import partial
-import operator
 
 #External imports
 from PySide.QtCore import *
@@ -45,11 +44,15 @@ class MainWidget(QWidget):
     ''' Left layout '''
 
     def init_left_layout(self):
+        self.init_main_button()
         self.init_series_box()
         self.init_add_button()
 
     def init_main_button(self):
-        print "x"
+        self.main_button = QPushButton("Main")
+        self.main_button.setStyleSheet("font: 20px; color: green")
+        self.main_button.clicked.connect(self.main_button_click)
+        self.left_layout.addWidget(self.main_button)
 
     def init_series_box(self):
 
@@ -97,9 +100,12 @@ class MainWidget(QWidget):
         self.episode_grid_scroll.ensureVisible(0, step)
 
     def add_button_click(self):
+        self.init_add_series_widget()
+        self.finder.show()
+
+    def main_button_click(self):
         # TODO
         pass
-
 
     ''' Right layout '''
 
@@ -169,6 +175,7 @@ class MainWidget(QWidget):
             pass
 
     def init_series_prefs(self):
+        # TODO
         pass
 
     def init_season_buttons(self):
@@ -281,17 +288,12 @@ class MainWidget(QWidget):
             print "Exception (" + str(sys.exc_info()[0]) + ") in method 'change_episode_grid'"
             pass
 
-    def change_episode_infobox(self):
-        pass
-
     def change_episode_infobox(self, action):
         series_dict = helper.series_dict()
         row = self.episode_grid.indexOf(action)/5
         episode = int(self.episode_grid.itemAtPosition(row, 1).widget().text())
         season = int(self.episode_grid.itemAtPosition(row, 0).widget().text())
-        print episode
-        print season
-        self.infobox_episode.setText("Season " + str(season) +  ", Episode " + str(episode))
+        self.infobox_episode.setText("Season " + str(season) + ", Episode " + str(episode))
         episodename = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['episodename']
         if episodename == None:
             episodename = "unknown"
@@ -321,6 +323,58 @@ class MainWidget(QWidget):
                 count += 1
         return count
 
+    ''' Add series Widget '''
+
+    def init_add_series_widget(self):
+        # Layout for finder window
+        self.search_layout = QVBoxLayout()
+
+        # Main Finder Window
+        self.finder = QWidget()
+        self.finder.resize(400, 400)
+        self.finder.setWindowTitle('Add a series to your library')
+
+        # Add line edit, buttons & search result list
+        self.search_label = QLabel()
+        self.search_label.setText("Search TVDB for the series you want to add:")
+        self.search_layout.addWidget(self.search_label)
+        self.search_line = QLineEdit()
+        self.search_layout.addWidget(self.search_line)
+        self.search_layout.setAlignment(Qt.AlignTop)
+        self.search_button = QPushButton()
+        self.search_button.setText("Search")
+        self.search_button.clicked.connect(self.search_series)
+        self.search_layout.addWidget(self.search_button)
+        self.search_result_list = QListWidget()
+        self.search_layout.addWidget(self.search_result_list)
+        self.choose_selection = QPushButton()
+        self.choose_selection.setText("Choose selected series")
+        self.choose_selection.clicked.connect(self.add_series)
+        self.search_layout.addWidget(self.choose_selection)
+
+        # Set finder layout
+        self.finder.setLayout(self.search_layout)
+
+    def add_series(self):
+        selected_item = self.search_result_list.currentItem().text()
+        serieshelper.add_series_to_json(selected_item)
+        self.clearLayout(self.seri)
+        self.init_left_layout()
+        self.finder.close()
+
+    def search_series(self):
+        searchstring = self.search_line.text()
+        if searchstring == "":
+            self.msg = QMessageBox()
+            self.msg.setWindowTitle("Error!")
+            self.msg.setText("You did not enter anything in the search line!")
+            self.msg.exec_()
+        else:
+            self.search_result_list.clear()
+            results = serieshelper.get_search_results(searchstring)
+            self.search_result_list.addItems(results)
+
+# Helper methods for GUI
 
     def clearLayout(self, layout):
         while layout.count():
@@ -329,18 +383,6 @@ class MainWidget(QWidget):
                 child.widget().deleteLater()
             elif child.layout() is not None:
                 self.clearLayout(child.layout())
-
-
-
-
-
-
-
-
-
-
-
-
 
 if __name__ == '__main__':
 # Exception Handling

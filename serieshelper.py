@@ -96,7 +96,6 @@ def add_series_to_json(series):
         dict_series[series]['seasons'][season] = {}
         dict_series[series]['seasons'][season]['season_link_sj'] = ""
         for episode in t[series][season].keys():
-            print "S" + str(season) + "E" + str(episode)
             dict_series[series]['seasons'][season][episode] = {}
             dict_series[series]['seasons'][season][episode]['episodename'] = t[series][season][episode]['episodename']
             dict_series[series]['seasons'][season][episode]['air_date'] = get_air_date(series, season, episode)
@@ -139,16 +138,13 @@ def get_highest_rated_banner_id(series):
     t.apikey = getAPI()
     series_dict = helper.series_dict()
     lan_pref = series_dict[series]['language']
-    print lan_pref
     keys = t[series]['_banners']['series']['graphical'].keys()
     value = 0
     returnkey = 0
     for key in keys:
         try:
             lan = t[series]['_banners']['series']['graphical'][key]['language']
-            print lan_pref + " = " + lan + "?"
             if lan == lan_pref:
-                print bool(lan == lan_pref)
                 key_rating = float(t[series]['_banners']['series']['graphical'][key]['rating'])
                 key_rating_count = float(t[series]['_banners']['series']['graphical'][key]['ratingcount'])
                 key_value = key_rating * key_rating_count
@@ -168,7 +164,6 @@ def get_highest_rated_banner_id(series):
             try:
                 lan = t[series]['_banners']['series']['graphical'][key]['language']
                 if lan == lan_pref:
-                    print "Key1: " + key
                     return key
             except KeyError:
                 print "Error2"
@@ -178,7 +173,6 @@ def get_highest_rated_banner_id(series):
             try:
                 lan = t[series]['_banners']['series']['graphical'][key]['language']
                 if lan == "en":
-                    print "Key2: " + key
                     return key
             except KeyError:
                 print "Error3"
@@ -262,7 +256,7 @@ def get_season_link(series, season):
     if helper.is_link(link):
         return link
     else:
-        return "Series not available in desired language"
+        return None
 
 if __name__ == '__main__':
     #add_series_to_json("The Simpsons")
