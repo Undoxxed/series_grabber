@@ -235,7 +235,7 @@ def get_series_html():
 def get_and_save_link(series):
     html_text = get_series_html()
     startpos = html_text.find("<h2>Serien")
-    searchstring = series.replace('!', '').replace('.', '-')
+    searchstring = series.replace('!', '')
     seriespos = html_text.find(searchstring, startpos)
     link = helper.get_last_link_before_pos(seriespos, html_text)
 
@@ -244,9 +244,27 @@ def get_and_save_link(series):
     else:
         return "No serienjunkies.org link available."
 
+def get_season_link(series, season):
+    series_dict = helper.series_dict()
+    sj_link = series_dict[series]['sj_link']
+    html = requests.get(sj_link)
+    html = html.text
+    language = series_dict[series]['language']
+    if language == "":
+        language = "en"
+    if language == "en":
+        searchstring = "Season " + str(season) + " &"
+    elif language == "de":
+        searchstring = "Staffel " + str(season) + " &"
+    startpos = html.find("<h2>Staffeln:</h2>")
+    season_pos = html.find(searchstring, startpos)
+    link = helper.get_last_link_before_pos(season_pos, html)
+    if helper.is_link(link):
+        return link
+    else:
+        return "Series not available in desired language"
 
 if __name__ == '__main__':
     #add_series_to_json("The Simpsons")
     #get_image("The Simpsons")
-    series_dict = helper.series_dict()
-    print series_dict
+    print get_season_link("Scrubs", 1)
