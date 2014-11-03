@@ -34,6 +34,7 @@ class MainWidget(QWidget):
         # Global variables
         self.current_series = ""
         self.current_season = -1
+        self.current_episode = -1
 
 
         # Set layouts
@@ -45,6 +46,7 @@ class MainWidget(QWidget):
 
     def init_left_layout(self):
         self.init_series_box()
+        self.init_add_button()
 
     def init_main_button(self):
         print "x"
@@ -54,9 +56,7 @@ class MainWidget(QWidget):
         # Widgets & Layout
         self.scroll_area = QScrollArea()
         self.series_layout = QVBoxLayout()
-
         self.scroll_area.setMinimumWidth(250)
-
 
         # Open series_dict
         series_dict = helper.series_dict()
@@ -73,7 +73,11 @@ class MainWidget(QWidget):
         self.left_layout.addWidget(self.scroll_area)
 
     def init_add_button(self):
-        print "x"
+        self.add_button = QPushButton("Add series...")
+        self.add_button.setMinimumHeight(30)
+        self.add_button.setStyleSheet("font-size: 15px")
+        self.add_button.clicked.connect(self.add_button_click)
+        self.left_layout.addWidget(self.add_button)
 
 
 #   Slots
@@ -88,10 +92,13 @@ class MainWidget(QWidget):
     def season_button(self, action):
         self.current_season = action
         episodes = self.get_no_of_episodes_to_season()
-        self.episode_grid_scroll.ensureVisible(0, 10000)
-        #self.episode_grid_scroll.ensureVisible(0, 700)
+        self.episode_grid_scroll.ensureVisible(0, 100000)
         step = 100 + 31 * episodes + 40 * (action-1)
         self.episode_grid_scroll.ensureVisible(0, step)
+
+    def add_button_click(self):
+        # TODO
+        pass
 
 
     ''' Right layout '''
@@ -102,23 +109,13 @@ class MainWidget(QWidget):
         self.right_layout.addWidget(self.banner)
         self.init_description()
         self.right_layout.addWidget(self.description_scroll)
-        seperator = self.return_seperator()
-        self.right_layout.addWidget(seperator)
         self.init_status_and_rating()
         self.right_layout.addLayout(self.status_rating_layout)
-        seperator = self.return_seperator()
-        self.right_layout.addWidget(seperator)
         self.init_season_buttons()
         self.right_layout.addLayout(self.season_button_layout)
-        self.init_episode_grid()
+        self.init_episode_box()
         self.right_layout.addLayout(self.episode_box)
 
-    def return_seperator(self):
-        seperator = QLabel()
-        seperator.setFrameStyle(QFrame.Plain | QFrame.Sunken)
-        seperator.setMaximumHeight(10)
-        seperator.setLineWidth(2)
-        return seperator
 
     def init_banner(self):
         self.banner = QLabel()
@@ -137,6 +134,7 @@ class MainWidget(QWidget):
     def init_description(self):
         self.description_scroll = QScrollArea()
         self.description = QLabel()
+        self.description.setIndent(5)
         self.description.setWordWrap(True)
         self.change_description()
         self.description_scroll.setWidgetResizable(True)
@@ -153,7 +151,10 @@ class MainWidget(QWidget):
     def init_status_and_rating(self):
         self.status_rating_layout = QHBoxLayout()
         self.status = QLabel()
+        self.status.setIndent(5)
         self.rating = QLabel()
+        self.status.setMinimumHeight(30)
+        self.rating.setMinimumHeight(30)
         self.change_status_and_rating()
         self.status_rating_layout.setAlignment(Qt.AlignLeft)
         self.status_rating_layout.addWidget(self.status)
@@ -185,25 +186,42 @@ class MainWidget(QWidget):
             season_button.clicked.connect(partial(self.season_button, action=int(season)))
             self.season_button_layout.addWidget(season_button)
 
-    def init_episode_grid(self):
-        self.episode_widget = QWidget()
-        self.episode_grid = QGridLayout(self.episode_widget)
+    def init_episode_box(self):
+        # Init main layout
         self.episode_box = QHBoxLayout()
 
-        # for i in range(5):
-        #     self.episode_label = QLabel("test" + str(i))
-        #     self.episode_button = QPushButton("test" + str(i))
-        #     self.episode_grid.addWidget(self.episode_label, i, 0)
-        #     self.episode_grid.addWidget(self.episode_button, i, 1)
-
+        # Init episode list
+        self.episode_widget = QWidget()
+        self.episode_grid = QGridLayout(self.episode_widget)
         self.episode_grid_scroll = QScrollArea()
         self.episode_grid_scroll.setWidgetResizable(True)
         self.episode_grid_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.episode_grid_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.episode_grid_scroll.setWidget(self.episode_widget)
         self.episode_box.addWidget(self.episode_grid_scroll)
-        self.change_episode_grid
 
+        # Init episode infobox
+        self.infobox_widget = QWidget()
+        self.episode_infobox = QVBoxLayout(self.infobox_widget)
+        self.infobox_episode = QLabel("No episode selected")
+        self.hline = QLabel()
+        self.hline.setFrameStyle(QFrame.HLine | QFrame.Plain)
+        self.hline.setLineWidth(1)
+        self.infobox_episodename = QLabel()
+        self.infobox_episodename.setWordWrap(True)
+        self.infobox_airdate = QLabel()
+        self.infobox_rating = QLabel()
+        self.infobox_description = QLabel()
+        self.infobox_description.setWordWrap(True)
+        self.episode_infobox.addWidget(self.infobox_episode)
+        self.episode_infobox.addWidget(self.hline)
+        self.episode_infobox.addWidget(self.infobox_episodename)
+        self.episode_infobox.addWidget(self.infobox_airdate)
+        self.episode_infobox.addWidget(self.infobox_rating)
+        self.episode_infobox.addWidget(self.infobox_description)
+        self.infobox_widget.setFixedWidth(250)
+        self.episode_infobox.setAlignment(Qt.AlignTop)
+        self.episode_box.addWidget(self.infobox_widget)
 
 
     def change_episode_grid(self):
@@ -247,6 +265,7 @@ class MainWidget(QWidget):
                         download_button = QPushButton("DL")
                         download_button.setMaximumWidth(50)
                         info_button = QPushButton(">>>")
+                        info_button.clicked.connect(partial(self.change_episode_infobox, action=info_button))
                         info_button.setMaximumWidth(50)
                         episodename_label.setWordWrap(True)
                         season_label.setAlignment(Qt.AlignCenter)
@@ -262,11 +281,33 @@ class MainWidget(QWidget):
             print "Exception (" + str(sys.exc_info()[0]) + ") in method 'change_episode_grid'"
             pass
 
-    def init_episode_infobox(self):
-        pass
-
     def change_episode_infobox(self):
         pass
+
+    def change_episode_infobox(self, action):
+        series_dict = helper.series_dict()
+        row = self.episode_grid.indexOf(action)/5
+        episode = int(self.episode_grid.itemAtPosition(row, 1).widget().text())
+        season = int(self.episode_grid.itemAtPosition(row, 0).widget().text())
+        print episode
+        print season
+        self.infobox_episode.setText("Season " + str(season) +  ", Episode " + str(episode))
+        episodename = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['episodename']
+        if episodename == None:
+            episodename = "unknown"
+        self.infobox_episodename.setText("Name: " + episodename)
+        air_date = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['air_date']
+        if air_date == None:
+            air_date = "unknown"
+        self.infobox_airdate.setText("Air date: " + air_date )
+        rating = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['rating']
+        if rating == None:
+            rating = "not rated"
+        self.infobox_rating.setText("TVDB-Rating: " + rating)
+        description = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['description']
+        if description == None:
+            description = "not available"
+        self.infobox_description.setText("Description: " + description)
 
     def get_no_of_episodes_to_season(self):
         series_dict = helper.series_dict()
@@ -279,6 +320,7 @@ class MainWidget(QWidget):
             for episode in range(start_episode, end_episode):
                 count += 1
         return count
+
 
     def clearLayout(self, layout):
         while layout.count():
