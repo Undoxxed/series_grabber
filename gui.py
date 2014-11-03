@@ -107,6 +107,12 @@ class MainWidget(QWidget):
         # TODO
         pass
 
+    def download_click(self, action):
+        row = self.episode_grid.indexOf(action)/5
+        episode = int(self.episode_grid.itemAtPosition(row, 1).widget().text())
+        season = int(self.episode_grid.itemAtPosition(row, 0).widget().text())
+        print serieshelper.get_download_link(self.current_series, season, episode)
+
     ''' Right layout '''
 
     def init_right_layout(self):
@@ -270,6 +276,7 @@ class MainWidget(QWidget):
                         episodename = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['episodename']
                         episodename_label = QLabel(episodename)
                         download_button = QPushButton("DL")
+                        download_button.clicked.connect(partial(self.download_click, action=download_button))
                         download_button.setMaximumWidth(50)
                         info_button = QPushButton(">>>")
                         info_button.clicked.connect(partial(self.change_episode_infobox, action=info_button))

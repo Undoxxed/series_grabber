@@ -258,7 +258,29 @@ def get_season_link(series, season):
     else:
         return None
 
+def get_download_link(series, season, episode):
+    link = get_season_link(series, season)
+    if link == None:
+        return None
+    html = requests.get(link)
+    html = html.text
+    if season < 10:
+        season = "0" + str(season)
+    else:
+        season = str(season)
+    if episode < 10:
+        episode = "0" + str(episode)
+    else:
+        episode = str(episode)
+    searchstring = "S" + season + "E" + episode
+    startpos = html.find("<div id=\"content\">")
+    uploader = "uploaded.to"
+    episodepos = html.find(searchstring, startpos)
+    uploaderpos = html.find(uploader, episodepos)
+    dl_link = helper.get_last_link_before_pos(uploaderpos, html)
+    return dl_link
+
 if __name__ == '__main__':
     #add_series_to_json("The Simpsons")
     #get_image("The Simpsons")
-    print get_season_link("Scrubs", 1)
+    print get_download_link("Scrubs", 9, 1)
