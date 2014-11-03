@@ -1,7 +1,7 @@
 #Python imports
 import sys
-import json
 from functools import partial
+import operator
 
 #External imports
 from PySide.QtCore import *
@@ -20,6 +20,7 @@ class MainWidget(QWidget):
 
         # Main Window
         self.setWindowTitle("Series Grabber")
+        self.setMinimumSize(900, 600)
 
         # Layouts
         self.main_layout = QHBoxLayout()
@@ -32,6 +33,7 @@ class MainWidget(QWidget):
 
         # Global variables
         self.current_series = ""
+        self.current_season = -1
 
 
         # Set layouts
@@ -81,7 +83,14 @@ class MainWidget(QWidget):
         self.change_banner_pixmap()
         self.change_description()
         self.change_status_and_rating()
+        self.change_season_buttons()
         self.change_episode_grid()
+
+    def season_button(self, action):
+        self.current_season = action
+        episodes = self.get_no_of_episodes_to_season()
+        self.episode_grid_scroll.ensureVisible(0, 1000000)
+        self.episode_grid_scroll.ensureVisible(0, 30 * episodes)
 
     ''' Right layout '''
 
@@ -91,11 +100,23 @@ class MainWidget(QWidget):
         self.right_layout.addWidget(self.banner)
         self.init_description()
         self.right_layout.addWidget(self.description_scroll)
+        seperator = self.return_seperator()
+        self.right_layout.addWidget(seperator)
         self.init_status_and_rating()
         self.right_layout.addLayout(self.status_rating_layout)
+        seperator = self.return_seperator()
+        self.right_layout.addWidget(seperator)
+        self.init_season_buttons()
+        self.right_layout.addLayout(self.season_button_layout)
         self.init_episode_grid()
-        #self.right_layout.addLayout(self.episode_grid_layout)
         self.right_layout.addLayout(self.episode_box)
+
+    def return_seperator(self):
+        seperator = QLabel()
+        seperator.setFrameStyle(QFrame.Plain | QFrame.Sunken)
+        seperator.setMaximumHeight(10)
+        seperator.setLineWidth(2)
+        return seperator
 
     def init_banner(self):
         self.banner = QLabel()
@@ -148,49 +169,108 @@ class MainWidget(QWidget):
         pass
 
     def init_season_buttons(self):
-        pass
+        self.season_button_layout = QHBoxLayout()
+        self.change_season_buttons
+
+
+    def change_season_buttons(self):
+        self.clearLayout(self.season_button_layout)
+        series_dict = helper.series_dict()
+        start_season = int(min(series_dict[self.current_series]['seasons'].keys()))
+        end_season = len(series_dict[self.current_series]['seasons'].keys())
+        for season in range(start_season, end_season):
+            season_button = QPushButton(str(season))
+            season_button.clicked.connect(partial(self.season_button, action=int(season)))
+            self.season_button_layout.addWidget(season_button)
 
     def init_episode_grid(self):
-        self.episode_grid_scroll = QScrollArea()
-        self.episode_grid_layout = QGridLayout()
+        self.episode_widget = QWidget()
+        self.episode_grid = QGridLayout(self.episode_widget)
         self.episode_box = QHBoxLayout()
-        self.episode_grid = QWidget()
-        self.testlabel = QLabel()
-        self.testlabel.setText("GRSDJSFSOEFSDES")
-        self.episode_grid.setLayout(self.episode_grid_layout)
-        self.change_episode_grid()
-        self.episode_grid_layout.setAlignment(Qt.AlignLeft)
+
+        # for i in range(5):
+        #     self.episode_label = QLabel("test" + str(i))
+        #     self.episode_button = QPushButton("test" + str(i))
+        #     self.episode_grid.addWidget(self.episode_label, i, 0)
+        #     self.episode_grid.addWidget(self.episode_button, i, 1)
+
+        self.episode_grid_scroll = QScrollArea()
         self.episode_grid_scroll.setWidgetResizable(True)
-        self.episode_grid_scroll.setWidget(self.episode_grid)
+        self.episode_grid_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.episode_grid_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.episode_grid_scroll.setWidget(self.episode_widget)
         self.episode_box.addWidget(self.episode_grid_scroll)
-        self.episode_box.addWidget(self.testlabel)
+        self.change_episode_grid
 
 
 
     def change_episode_grid(self):
         try:
+            self.clearLayout(self.episode_grid)
             series_dict = helper.series_dict()
             row = 0
-            for season in series_dict[self.current_series]['seasons'].keys():
-                for episode in series_dict[self.current_series]['seasons'][season].keys():
-                    print "S" + str(season) + "E" + str(episode)
-                    if episode != "season_link_sj":
-                        season_Label = QLabel()
-                        episode_label = QLabel()
-                        episodename_label = QLabel()
-                        season_Label.setText(str(season))
-                        episode_label.setText(str(episode))
-                        print series_dict[self.current_series]['seasons'][season][episode]['episodename']
-                        episodename_label.setText(series_dict[self.current_series]['seasons'][season][episode]['episodename'])
-                        self.episode_grid_layout.addWidget(episodename_label, row, 3)
-                        self.episode_grid_layout.addWidget(season_Label, row, 1)
-                        self.episode_grid_layout.addWidget(episode_label, row, 2)
+            start_season = int(min(series_dict[self.current_series]['seasons'].keys()))
+            end_season = len(series_dict[self.current_series]['seasons'].keys())
+            for season in range(start_season, end_season):
+                start_episode = int(min(series_dict[self.current_series]['seasons'][str(season)].keys()))
+                end_episode = len(series_dict[self.current_series]['seasons'][str(season)].keys())
+                for episode in range(start_episode, end_episode):
+                    #print "S" + str(season) + "E" + str(episode)
+                    if str(episode) != "season_link_sj":
+                        season_label = QLabel(str(season))
+                        season_label.setMaximumWidth(25)
+                        episode_label = QLabel(str(episode))
+                        episode_label.setMaximumWidth(25)
+                        episodename = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['episodename']
+                        episodename_label = QLabel(episodename)
+                        download_button = QPushButton("Download")
+                        download_button.setMaximumWidth(100)
+                        episodename_label.setWordWrap(True)
+                        if int(season) % 2 == 0:
+                            stylesheet = "color: black"
+                        else:
+                            stylesheet = "color: blue"
+                        season_label.setStyleSheet(stylesheet)
+                        episode_label.setStyleSheet(stylesheet)
+                        episodename_label.setStyleSheet(stylesheet)
+                        download_button.setStyleSheet(stylesheet)
+                        self.episode_grid.addWidget(season_label, row, 0)
+                        self.episode_grid.addWidget(episode_label, row, 1)
+                        self.episode_grid.addWidget(episodename_label, row, 2)
+                        self.episode_grid.addWidget(download_button, row, 3)
                         row += 1
+                seperator = self.return_seperator()
+                self.episode_grid.addWidget(seperator, row, 0)
+                self.episode_grid.addWidget(seperator, row, 1)
+                self.episode_grid.addWidget(seperator, row, 2)
+                self.episode_grid.addWidget(seperator, row, 3)
+                row += 1
         except:
+            print "Exception (" + str(sys.exc_info()[0]) + ") in method 'change_episode_grid'"
             pass
 
     def episode_infobox(self):
         pass
+
+    def get_no_of_episodes_to_season(self):
+        series_dict = helper.series_dict()
+        start_season = int(min(series_dict[self.current_series]['seasons'].keys()))
+        end_season = self.current_season
+        count = 0
+        for season in range(start_season, end_season):
+            start_episode = int(min(series_dict[self.current_series]['seasons'][str(season)].keys()))
+            end_episode = len(series_dict[self.current_series]['seasons'][str(season)].keys())
+            for episode in range(start_episode, end_episode):
+                count += 1
+        return count
+
+    def clearLayout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                self.clearLayout(child.layout())
 
 
 

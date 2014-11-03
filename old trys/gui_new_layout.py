@@ -395,6 +395,13 @@ class SeriesGrabberGUI(QWidget):
         current_sel = self.series_list.currentRow()
         return current_sel
 
+    def clearLayout(layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget() is not None:
+                child.widget().deleteLater()
+            elif child.layout() is not None:
+                self.clearLayout(child.layout())
 
     def run(self):
         ''' Show the application window and start the main event loop '''
