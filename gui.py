@@ -18,8 +18,9 @@ class MainWidget(QWidget):
         super(MainWidget, self).__init__(parent)
 
         # Main Window
-        self.setWindowTitle("Series Grabber")
-        self.setMinimumSize(900, 600)
+        self.setWindowTitle("SeriesGrabber v0.1")
+        self.setMinimumSize(900, 650)
+        self.setStyleSheet("background-color: darkgrey")
 
         # Layouts
         self.main_layout = QHBoxLayout()
@@ -47,10 +48,18 @@ class MainWidget(QWidget):
         self.init_main_button()
         self.init_series_box()
         self.init_add_button()
+        self.left_layout.setSpacing(10)
 
     def init_main_button(self):
-        self.main_button = QPushButton("Main")
-        self.main_button.setStyleSheet("font: 20px; color: green")
+        self.main_button = QPushButton()
+        self.main_button.setFixedHeight(75)
+        main_pixmap = QPixmap("data/icons/main.png")
+        main_icon = QIcon(main_pixmap)
+        self.main_button.setIcon(main_icon)
+        self.main_button.setIconSize(QSize(65, 65))
+        stylesheet_hover = "QPushButton:hover {background-color: lightgreen; border-width: 3px}"
+        stylesheet_normal = "QPushButton {background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 5px}"
+        self.main_button.setStyleSheet(stylesheet_normal + stylesheet_hover)
         self.main_button.clicked.connect(self.main_button_click)
         self.left_layout.addWidget(self.main_button)
 
@@ -59,26 +68,38 @@ class MainWidget(QWidget):
         # Widgets & Layout
         self.scroll_area = QScrollArea()
         self.series_layout = QVBoxLayout()
-        self.scroll_area.setMinimumWidth(250)
+        self.scroll_area.setMinimumWidth(200)
 
         # Open series_dict
         series_dict = helper.series_dict()
         for series in series_dict.keys():
             # Add push button
             button = QPushButton("{action}".format(action=series), self)
-            button.setStyleSheet("QPushButton {text-align: left; font-size: 15px}")
+            stylesheet_hover = "QPushButton:hover {text-align: center; background-color: lightgreen; border-width: 2px}"
+            stylesheet_normal = "QPushButton {text-align: left; font: bold 12px; background-color: lightgrey; border-color: black; border-style: outset; border-width: 0px; border-radius: 5px}"
+            button.setMinimumHeight(30)
+            button.setStyleSheet(stylesheet_normal + stylesheet_hover)
             button.clicked.connect(partial(self.series_button, action=series))
             self.series_layout.addWidget(button)
 
         # Add to layout
         self.series_layout.setAlignment(Qt.AlignTop)
         self.scroll_area.setLayout(self.series_layout)
+        scroll_area_stylesheet = "background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 5px"
+        self.scroll_area.setStyleSheet(scroll_area_stylesheet)
         self.left_layout.addWidget(self.scroll_area)
 
     def init_add_button(self):
-        self.add_button = QPushButton("Add series...")
-        self.add_button.setMinimumHeight(30)
-        self.add_button.setStyleSheet("font-size: 15px")
+        self.add_button = QPushButton()
+        self.add_button.setMinimumHeight(40)
+        stylesheet_hover = "QPushButton:hover {background-color: lightgreen; border-width: 3px}"
+        stylesheet_normal = "QPushButton {text-align: center; font: bold 12px; background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 5px}"
+        pixmap_add = QPixmap("data/icons/add.png")
+        icon_add = QIcon(pixmap_add)
+        self.add_button.setIcon(icon_add)
+        self.add_button.setIconSize(QSize(30, 30))
+        self.add_button.setToolTip("Add new series to library...")
+        self.add_button.setStyleSheet(stylesheet_hover + stylesheet_normal)
         self.add_button.clicked.connect(self.add_button_click)
         self.left_layout.addWidget(self.add_button)
 
@@ -94,10 +115,13 @@ class MainWidget(QWidget):
 
     def season_button(self, action):
         self.current_season = action
-        episodes = self.get_no_of_episodes_to_season()
-        self.episode_grid_scroll.ensureVisible(0, 100000)
-        step = 100 + 31 * episodes + 40 * (action-1)
-        self.episode_grid_scroll.ensureVisible(0, step)
+        if self.current_season == 0:
+            self.episode_grid_scroll.ensureVisible(0, 0)
+        else:
+            episodes = self.get_no_of_episodes_to_season()
+            step = 100 + 31 * episodes + 40 * (action-1)
+            self.episode_grid_scroll.ensureVisible(0, 100000)
+            self.episode_grid_scroll.ensureVisible(0, step)
 
     def add_button_click(self):
         self.init_add_series_widget()
@@ -122,24 +146,27 @@ class MainWidget(QWidget):
         self.init_description()
         self.right_layout.addWidget(self.description_scroll)
         self.init_status_and_rating()
-        self.right_layout.addLayout(self.status_rating_layout)
+        self.right_layout.addWidget(self.status_rating_scroll)
         self.init_season_buttons()
         self.right_layout.addLayout(self.season_button_layout)
         self.init_episode_box()
         self.right_layout.addLayout(self.episode_box)
-
+        self.init_bottom_box()
+        self.right_layout.addWidget(self.bottom_box)
+        self.right_layout.setSpacing(10)
 
     def init_banner(self):
         self.banner = QLabel()
-        self.banner.setFrameStyle(QFrame.Panel | QFrame.Plain)
-        self.banner.setLineWidth(1)
         self.banner.setFixedSize(758, 140)
         self.change_banner_pixmap()
+        stylesheet_banner = "background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 3px"
+        self.banner.setStyleSheet(stylesheet_banner)
 
     def change_banner_pixmap(self):
         try:
             path = serieshelper.get_image(self.current_series)
-            self.banner.setPixmap(path)
+            pixmap = QPixmap(path)
+            self.banner.setPixmap(pixmap)
         except:
             pass
 
@@ -151,6 +178,9 @@ class MainWidget(QWidget):
         self.change_description()
         self.description_scroll.setWidgetResizable(True)
         self.description_scroll.setMaximumHeight(50)
+        stylesheet_descr = "background-color: lightgrey; border-color: black; border-style: solid; border-width: 1px; border-radius: 3px"
+        self.description_scroll.setStyleSheet(stylesheet_descr)
+        self.description_scroll.verticalScrollBar().setStyleSheet("QScrollBar {width: 0px;}")
         self.description_scroll.setWidget(self.description)
 
     def change_description(self):
@@ -161,22 +191,42 @@ class MainWidget(QWidget):
             pass
 
     def init_status_and_rating(self):
-        self.status_rating_layout = QHBoxLayout()
+        self.status_rating_scroll = QScrollArea()
+        self.status_rating_scroll.setWidgetResizable(True)
+        self.status_rating_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.status_rating_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.status_rating_widget = QWidget()
+        self.status_rating_widget.setMaximumHeight(40)
+        self.status_rating_layout = QHBoxLayout(self.status_rating_widget)
         self.status = QLabel()
-        self.status.setIndent(5)
         self.rating = QLabel()
-        self.status.setMinimumHeight(30)
-        self.rating.setMinimumHeight(30)
+        self.vline = QLabel()
+        self.vline.setFrameStyle(QFrame.VLine | QFrame.Plain)
+        self.vline.setLineWidth(1)
+        self.vline.setAlignment(Qt.AlignCenter)
+        self.status.setAlignment(Qt.AlignCenter)
+        self.rating.setAlignment(Qt.AlignCenter)
+        self.vline.setMaximumWidth(5)
+        self.status.setFixedWidth(200)
+        self.rating.setFixedWidth(200)
         self.change_status_and_rating()
-        self.status_rating_layout.setAlignment(Qt.AlignLeft)
         self.status_rating_layout.addWidget(self.status)
+        self.status_rating_layout.addWidget(self.vline)
         self.status_rating_layout.addWidget(self.rating)
+        self.status_rating_layout.setSpacing(0)
+        self.status_rating_widget.setLayout(self.status_rating_layout)
+        stylesheet_widget = "background-color: lightgrey"
+        self.status_rating_widget.setStyleSheet(stylesheet_widget)
+        stylesheet_scroll = "QScrollArea {text-align: center; background-color: lightgrey; border-color: black; border-style: solid; border-width: 2px; border-radius: 3px}"
+        self.status_rating_scroll.setStyleSheet(stylesheet_scroll)
+        self.status_rating_scroll.setMaximumHeight(40)
+        self.status_rating_scroll.setWidget(self.status_rating_widget)
 
     def change_status_and_rating(self):
         try:
             series_dict = helper.series_dict()
             self.status.setText("Current Status: " + series_dict[self.current_series]['status'])
-            self.rating.setText(" |   TVDB-Rating: " + series_dict[self.current_series]['rating'])
+            self.rating.setText("TVDB-Rating: " + series_dict[self.current_series]['rating'])
         except:
             pass
 
@@ -186,6 +236,7 @@ class MainWidget(QWidget):
 
     def init_season_buttons(self):
         self.season_button_layout = QHBoxLayout()
+        self.season_button_layout.setAlignment(Qt.AlignLeft)
         self.change_season_buttons
 
 
@@ -194,8 +245,13 @@ class MainWidget(QWidget):
         series_dict = helper.series_dict()
         start_season = int(min(series_dict[self.current_series]['seasons'].keys()))
         end_season = len(series_dict[self.current_series]['seasons'].keys())
+        stylesheet_normal = "QPushButton {font: bold 12px; background-color: lightgrey; border-color: black; border-style: solid; border-width: 1px; border-radius: 15px}"
+        stylesheet_hover = "QPushButton:hover {background-color: lightgreen; border-width: 2px}"
         for season in range(start_season, end_season):
             season_button = QPushButton(str(season))
+            season_button.setFixedWidth(30)
+            season_button.setFixedHeight(30)
+            season_button.setStyleSheet(stylesheet_normal + stylesheet_hover)
             season_button.clicked.connect(partial(self.season_button, action=int(season)))
             self.season_button_layout.addWidget(season_button)
 
@@ -211,10 +267,18 @@ class MainWidget(QWidget):
         self.episode_grid_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.episode_grid_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.episode_grid_scroll.setWidget(self.episode_widget)
+        stylesheet = "QScrollArea {text-align: center; background-color: lightgrey; border-color: black; border-style: solid; border-width: 2px; border-radius: 3px}"
+        stylesheet_episode_widget = "background-color: lightgrey"
+        self.episode_grid_scroll.setStyleSheet(stylesheet)
+        self.episode_widget.setStyleSheet(stylesheet_episode_widget)
+        self.episode_grid_scroll.verticalScrollBar().setStyleSheet("QScrollBar {width:0px;}")
         self.episode_box.addWidget(self.episode_grid_scroll)
 
         # Init episode infobox
         self.infobox_widget = QWidget()
+        self.episode_infobox_scroll = QScrollArea()
+        self.episode_infobox_scroll.setWidgetResizable(True)
+        self.episode_grid_scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.episode_infobox = QVBoxLayout(self.infobox_widget)
         self.infobox_episode = QLabel("No episode selected")
         self.hline = QLabel()
@@ -232,9 +296,15 @@ class MainWidget(QWidget):
         self.episode_infobox.addWidget(self.infobox_airdate)
         self.episode_infobox.addWidget(self.infobox_rating)
         self.episode_infobox.addWidget(self.infobox_description)
-        self.infobox_widget.setFixedWidth(250)
         self.episode_infobox.setAlignment(Qt.AlignTop)
-        self.episode_box.addWidget(self.infobox_widget)
+        self.episode_infobox_scroll.setWidget(self.infobox_widget)
+        self.episode_infobox_scroll.setMaximumWidth(250)
+        stylesheet_scroll = "QScrollArea {text-align: center; background-color: lightgrey; border-color: black; border-style: solid; border-width: 2px; border-radius: 3px}"
+        stylesheet_infobox ="background-color: lightgrey"
+        self.infobox_widget.setStyleSheet(stylesheet_infobox)
+        self.episode_infobox_scroll.setStyleSheet(stylesheet_scroll)
+        self.episode_infobox_scroll.verticalScrollBar().setStyleSheet("QScrollBar {width:0px;}")
+        self.episode_box.addWidget(self.episode_infobox_scroll)
 
 
     def change_episode_grid(self):
@@ -244,18 +314,21 @@ class MainWidget(QWidget):
             row = 0
             start_season = int(min(series_dict[self.current_series]['seasons'].keys()))
             end_season = len(series_dict[self.current_series]['seasons'].keys())
+            dl_pixmap = QPixmap("data/icons/download.png")
+            dl_icon = QIcon(dl_pixmap)
+            info_pixmap = QPixmap("data/icons/info.png")
+            info_icon = QIcon(info_pixmap)
             for season in range(start_season, end_season):
 
                 if season != end_season:
                     season_seperator = QLabel()
-                    season_seperator.setFrameStyle(QFrame.HLine | QFrame.Sunken)
+                    season_seperator.setFrameStyle(QFrame.HLine | QFrame.Plain)
                     season_seperator.setLineWidth(2)
                     s_label = QLabel(str(season))
-                    s_label.setFrameStyle(QFrame.Panel | QFrame.Raised)
-                    s_label.setLineWidth(2)
+                    stylesheet_label = "font: bold 15px; background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 3px"
+                    s_label.setStyleSheet(stylesheet_label)
                     s_label.setMinimumHeight(35)
                     s_label.setAlignment(Qt.AlignCenter)
-                    s_label.setStyleSheet("font: bold 15px")
                     #season_no = QLabel(str(season))
                     #season_no.setStyleSheet("font-size: 20px")
                     self.episode_grid.addWidget(s_label, row, 0, 1, 2)
@@ -265,6 +338,8 @@ class MainWidget(QWidget):
 
                 start_episode = int(min(series_dict[self.current_series]['seasons'][str(season)].keys()))
                 end_episode = len(series_dict[self.current_series]['seasons'][str(season)].keys())
+                stylesheet_buttons_normal = "QPushButton {border-style: inset; border-width: 1px;}"
+                stylesheet_buttons_hover = "QPushButton:hover {border-color: green}"
                 for episode in range(start_episode, end_episode):
                     #print "S" + str(season) + "E" + str(episode)
                     if str(episode) != "season_link_sj":
@@ -275,12 +350,18 @@ class MainWidget(QWidget):
                         episode_label.setMaximumWidth(25)
                         episodename = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['episodename']
                         episodename_label = QLabel(episodename)
-                        download_button = QPushButton("DL")
+                        download_button = QPushButton()
+                        download_button.setIcon(dl_icon)
                         download_button.clicked.connect(partial(self.download_click, action=download_button))
                         download_button.setMaximumWidth(50)
-                        info_button = QPushButton(">>>")
+                        download_button.setFixedHeight(25)
+                        download_button.setStyleSheet(stylesheet_buttons_normal + stylesheet_buttons_hover)
+                        info_button = QPushButton()
+                        info_button.setIcon(info_icon)
                         info_button.clicked.connect(partial(self.change_episode_infobox, action=info_button))
                         info_button.setMaximumWidth(50)
+                        info_button.setFixedHeight(25)
+                        info_button.setStyleSheet(stylesheet_buttons_normal + stylesheet_buttons_hover)
                         episodename_label.setWordWrap(True)
                         season_label.setAlignment(Qt.AlignCenter)
                         episode_label.setAlignment(Qt.AlignCenter)
@@ -329,6 +410,14 @@ class MainWidget(QWidget):
             for episode in range(start_episode, end_episode):
                 count += 1
         return count
+
+    def init_bottom_box(self):
+        self.bottom_box = QLabel()
+        self.bottom_box.setText("Placeholder")
+        stylesheet = "font: bold 12px; background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 5px"
+        self.bottom_box.setStyleSheet(stylesheet)
+        self.bottom_box.setAlignment(Qt.AlignCenter)
+        self.bottom_box.setMinimumHeight(40)
 
     ''' Add series Widget '''
 
