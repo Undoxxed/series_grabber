@@ -13,7 +13,6 @@ import serieshelper
 
 class MainWidget(QWidget):
 
-
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
 
@@ -23,7 +22,7 @@ class MainWidget(QWidget):
         pixmap_window = QPixmap("data/icons/window.png")
         icon_window = QIcon(pixmap_window)
         self.setWindowIcon(icon_window)
-        #self.setPalette(self.getPalette("gw"))
+        self.setPalette(self.getPalette("gw"))
 
         # Initialize stacked widgets
         self.left_widget = QWidget()
@@ -141,7 +140,7 @@ class MainWidget(QWidget):
         self.finder.show()
 
     def main_button_click(self):
-        self.right_widget.setCurrentWidget(self.main_page_widget)
+        self.right_widget.setCurrentWidget(self.main_page_scroll)
 
 
     def download_click(self, action):
@@ -150,7 +149,7 @@ class MainWidget(QWidget):
         season = int(self.episode_grid.itemAtPosition(row, 0).widget().text())
         print serieshelper.get_download_link(self.current_series, season, episode)
 
-    ''' Right layout '''
+    """ Right layout """
 
     def init_right_layout(self):
         self.right_episode_widget = QWidget()
@@ -443,10 +442,19 @@ class MainWidget(QWidget):
 
     def init_main_page_layout(self):
         self.main_page_widget = QWidget()
-        self.main_page_layout = QVBoxLayout()
+        self.main_page_scroll = QScrollArea()
+        self.main_page_scroll.setWidgetResizable(True)
+        self.main_page_layout = QVBoxLayout(self.main_page_scroll)
+        self.main_page_layout.setSpacing(15)
+        self.main_page_label1 = QLabel()
+        self.main_page_label2 = QLabel()
+        self.main_page_layout.addWidget(self.main_page_label1)
+        self.main_page_layout.addWidget(self.main_page_label2)
         self.main_page_widget.setLayout(self.main_page_layout)
-        self.main_page_widget.setFixedSize(758, 650)
-        self.right_widget.addWidget(self.main_page_widget)
+        self.main_page_scroll.setPalette(self.getPalette("gw"))
+        self.main_page_scroll.setFrameShape(QFrame.NoFrame)
+        self.right_widget.addWidget(self.main_page_scroll)
+        self.right_widget.setCurrentWidget(self.main_page_scroll)
 
     ''' Add series Widget '''
 
