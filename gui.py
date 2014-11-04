@@ -20,7 +20,14 @@ class MainWidget(QWidget):
         # Main Window
         self.setWindowTitle("SeriesGrabber v0.1")
         self.setMinimumSize(900, 650)
-        self.setStyleSheet("background-color: darkgrey")
+        pixmap_window = QPixmap("data/icons/window.png")
+        icon_window = QIcon(pixmap_window)
+        self.setWindowIcon(icon_window)
+        #self.setPalette(self.getPalette("gw"))
+
+        # Initialize stacked widgets
+        self.left_widget = QWidget()
+        self.right_widget = QStackedWidget()
 
         # Layouts
         self.main_layout = QHBoxLayout()
@@ -30,6 +37,8 @@ class MainWidget(QWidget):
         # Initialize layouts
         self.init_left_layout()
         self.init_right_layout()
+        self.init_main_page_layout()
+
 
         # Global variables
         self.current_series = ""
@@ -38,8 +47,9 @@ class MainWidget(QWidget):
 
 
         # Set layouts
-        self.main_layout.addLayout(self.left_layout)
-        self.main_layout.addLayout(self.right_layout)
+        self.main_layout.addWidget(self.left_widget)
+        self.main_layout.addWidget(self.right_widget)
+        self.main_layout.setSpacing(20)
         self.setLayout(self.main_layout)
 
     ''' Left layout '''
@@ -48,7 +58,8 @@ class MainWidget(QWidget):
         self.init_main_button()
         self.init_series_box()
         self.init_add_button()
-        self.left_layout.setSpacing(10)
+        self.left_layout.setSpacing(15)
+        self.left_widget.setLayout(self.left_layout)
 
     def init_main_button(self):
         self.main_button = QPushButton()
@@ -75,8 +86,8 @@ class MainWidget(QWidget):
         for series in series_dict.keys():
             # Add push button
             button = QPushButton("{action}".format(action=series), self)
-            stylesheet_hover = "QPushButton:hover {text-align: center; background-color: lightgreen; border-width: 2px}"
-            stylesheet_normal = "QPushButton {text-align: left; font: bold 12px; background-color: lightgrey; border-color: black; border-style: outset; border-width: 0px; border-radius: 5px}"
+            stylesheet_hover = "QPushButton:hover {text-align: center; background-color: lightgreen; border-style: outset; border-width: 2px}"
+            stylesheet_normal = "QPushButton {text-align: left; font: bold 12px; background-color: lightgrey; border-color: black; border-width: 0px; border-radius: 5px}"
             button.setMinimumHeight(30)
             button.setStyleSheet(stylesheet_normal + stylesheet_hover)
             button.clicked.connect(partial(self.series_button, action=series))
@@ -112,6 +123,8 @@ class MainWidget(QWidget):
         self.change_status_and_rating()
         self.change_season_buttons()
         self.change_episode_grid()
+        self.right_widget.setCurrentWidget(self.right_episode_widget)
+
 
     def season_button(self, action):
         self.current_season = action
@@ -128,8 +141,8 @@ class MainWidget(QWidget):
         self.finder.show()
 
     def main_button_click(self):
-        # TODO
-        pass
+        self.right_widget.setCurrentWidget(self.main_page_widget)
+
 
     def download_click(self, action):
         row = self.episode_grid.indexOf(action)/5
@@ -140,6 +153,7 @@ class MainWidget(QWidget):
     ''' Right layout '''
 
     def init_right_layout(self):
+        self.right_episode_widget = QWidget()
         self.right_layout.setAlignment(Qt.AlignTop)
         self.init_banner()
         self.right_layout.addWidget(self.banner)
@@ -153,7 +167,9 @@ class MainWidget(QWidget):
         self.right_layout.addLayout(self.episode_box)
         self.init_bottom_box()
         self.right_layout.addWidget(self.bottom_box)
-        self.right_layout.setSpacing(10)
+        self.right_layout.setSpacing(15)
+        self.right_episode_widget.setLayout(self.right_layout)
+        self.right_widget.addWidget(self.right_episode_widget)
 
     def init_banner(self):
         self.banner = QLabel()
@@ -237,6 +253,7 @@ class MainWidget(QWidget):
     def init_season_buttons(self):
         self.season_button_layout = QHBoxLayout()
         self.season_button_layout.setAlignment(Qt.AlignLeft)
+        self.season_button_layout.setSpacing(5)
         self.change_season_buttons
 
 
@@ -245,12 +262,12 @@ class MainWidget(QWidget):
         series_dict = helper.series_dict()
         start_season = int(min(series_dict[self.current_series]['seasons'].keys()))
         end_season = len(series_dict[self.current_series]['seasons'].keys())
-        stylesheet_normal = "QPushButton {font: bold 12px; background-color: lightgrey; border-color: black; border-style: solid; border-width: 1px; border-radius: 15px}"
-        stylesheet_hover = "QPushButton:hover {background-color: lightgreen; border-width: 2px}"
+        stylesheet_normal = "QPushButton {font: bold 15px; background-color: lightgrey; border-color: black; border-style: solid; border-width: 2px; border-radius: 18px}"
+        stylesheet_hover = "QPushButton:hover {border-color: white; background-color: black; color: white; border-width: 3px}"
         for season in range(start_season, end_season):
             season_button = QPushButton(str(season))
-            season_button.setFixedWidth(30)
-            season_button.setFixedHeight(30)
+            season_button.setFixedWidth(36)
+            season_button.setFixedHeight(36)
             season_button.setStyleSheet(stylesheet_normal + stylesheet_hover)
             season_button.clicked.connect(partial(self.season_button, action=int(season)))
             self.season_button_layout.addWidget(season_button)
@@ -422,6 +439,15 @@ class MainWidget(QWidget):
         self.bottom_box.setAlignment(Qt.AlignCenter)
         self.bottom_box.setMinimumHeight(40)
 
+    ''' Main page layout '''
+
+    def init_main_page_layout(self):
+        self.main_page_widget = QWidget()
+        self.main_page_layout = QVBoxLayout()
+        self.main_page_widget.setLayout(self.main_page_layout)
+        self.main_page_widget.setFixedSize(758, 650)
+        self.right_widget.addWidget(self.main_page_widget)
+
     ''' Add series Widget '''
 
     def init_add_series_widget(self):
@@ -482,6 +508,25 @@ class MainWidget(QWidget):
                 child.widget().deleteLater()
             elif child.layout() is not None:
                 self.clearLayout(child.layout())
+
+    def getPalette(self, background):
+        path = "data/patterns/"
+        if background == "bm":
+            file = "black_maze.png"
+        elif background == "gf":
+            file = "green_fibers.png"
+        elif background == "gt":
+            file = "grey_triangles.png"
+        elif background == "gw":
+            file = "grey_washed.png"
+        elif background == "wh":
+            file = "white_husk.png"
+        else:
+            file = "black_maze.png"
+        pixmap = QPixmap(path + file)
+        palette = QPalette()
+        palette.setBrush(QPalette.Background, pixmap)
+        return palette
 
 if __name__ == '__main__':
 # Exception Handling
