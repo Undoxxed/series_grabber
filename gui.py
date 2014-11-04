@@ -323,9 +323,9 @@ class MainWidget(QWidget):
                 if season != end_season:
                     season_seperator = QLabel()
                     season_seperator.setFrameStyle(QFrame.HLine | QFrame.Plain)
-                    season_seperator.setLineWidth(2)
+                    season_seperator.setLineWidth(1)
                     s_label = QLabel(str(season))
-                    stylesheet_label = "font: bold 15px; background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 3px"
+                    stylesheet_label = "font: bold 15px; background-color: lightgrey; border-style: outset; border-width: 1px; border-radius: 5px"
                     s_label.setStyleSheet(stylesheet_label)
                     s_label.setMinimumHeight(35)
                     s_label.setAlignment(Qt.AlignCenter)
@@ -338,39 +338,42 @@ class MainWidget(QWidget):
 
                 start_episode = int(min(series_dict[self.current_series]['seasons'][str(season)].keys()))
                 end_episode = len(series_dict[self.current_series]['seasons'][str(season)].keys())
-                stylesheet_buttons_normal = "QPushButton {border-style: inset; border-width: 1px;}"
-                stylesheet_buttons_hover = "QPushButton:hover {border-color: green}"
+                stylesheet_buttons_normal = "QPushButton {border-style: inset; border-width: 1px; border-radius: 5px}"
+                stylesheet_buttons_hover = "QPushButton:hover {border-style: outset; background-color: lightgreen;}"
                 for episode in range(start_episode, end_episode):
                     #print "S" + str(season) + "E" + str(episode)
                     if str(episode) != "season_link_sj":
-                        season_label = QLabel(str(season))
-                        season_label.setMaximumWidth(25)
-                        season_label.setFixedHeight(25)
-                        episode_label = QLabel(str(episode))
-                        episode_label.setMaximumWidth(25)
-                        episodename = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['episodename']
-                        episodename_label = QLabel(episodename)
-                        download_button = QPushButton()
-                        download_button.setIcon(dl_icon)
-                        download_button.clicked.connect(partial(self.download_click, action=download_button))
-                        download_button.setMaximumWidth(50)
-                        download_button.setFixedHeight(25)
-                        download_button.setStyleSheet(stylesheet_buttons_normal + stylesheet_buttons_hover)
-                        info_button = QPushButton()
-                        info_button.setIcon(info_icon)
-                        info_button.clicked.connect(partial(self.change_episode_infobox, action=info_button))
-                        info_button.setMaximumWidth(50)
-                        info_button.setFixedHeight(25)
-                        info_button.setStyleSheet(stylesheet_buttons_normal + stylesheet_buttons_hover)
-                        episodename_label.setWordWrap(True)
-                        season_label.setAlignment(Qt.AlignCenter)
-                        episode_label.setAlignment(Qt.AlignCenter)
-                        self.episode_grid.addWidget(season_label, row, 0)
-                        self.episode_grid.addWidget(episode_label, row, 1)
-                        self.episode_grid.addWidget(episodename_label, row, 2)
-                        self.episode_grid.addWidget(download_button, row, 3)
-                        self.episode_grid.addWidget(info_button, row, 4)
-                        row += 1
+                        try:
+                            season_label = QLabel(str(season))
+                            season_label.setMaximumWidth(25)
+                            season_label.setFixedHeight(25)
+                            episode_label = QLabel(str(episode))
+                            episode_label.setMaximumWidth(25)
+                            episodename = series_dict[self.current_series]['seasons'][str(season)][str(episode)]['episodename']
+                            episodename_label = QLabel(episodename)
+                            download_button = QPushButton()
+                            download_button.setIcon(dl_icon)
+                            download_button.clicked.connect(partial(self.download_click, action=download_button))
+                            download_button.setMaximumWidth(50)
+                            download_button.setFixedHeight(25)
+                            download_button.setStyleSheet(stylesheet_buttons_normal + stylesheet_buttons_hover)
+                            info_button = QPushButton()
+                            info_button.setIcon(info_icon)
+                            info_button.clicked.connect(partial(self.change_episode_infobox, action=info_button))
+                            info_button.setMaximumWidth(50)
+                            info_button.setFixedHeight(25)
+                            info_button.setStyleSheet(stylesheet_buttons_normal + stylesheet_buttons_hover)
+                            episodename_label.setWordWrap(True)
+                            season_label.setAlignment(Qt.AlignCenter)
+                            episode_label.setAlignment(Qt.AlignCenter)
+                            self.episode_grid.addWidget(season_label, row, 0)
+                            self.episode_grid.addWidget(episode_label, row, 1)
+                            self.episode_grid.addWidget(episodename_label, row, 2)
+                            self.episode_grid.addWidget(download_button, row, 3)
+                            self.episode_grid.addWidget(info_button, row, 4)
+                            row += 1
+                        except KeyError:
+                            continue
 
         except:
             print "Exception (" + str(sys.exc_info()[0]) + ") in method 'change_episode_grid'"
@@ -454,7 +457,7 @@ class MainWidget(QWidget):
     def add_series(self):
         selected_item = self.search_result_list.currentItem().text()
         serieshelper.add_series_to_json(selected_item)
-        self.clearLayout(self.seri)
+        self.clearLayout(self.left_layout)
         self.init_left_layout()
         self.finder.close()
 
