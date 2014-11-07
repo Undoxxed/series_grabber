@@ -1,22 +1,26 @@
-#Python imports
+# Python imports
 import sys
 from functools import partial
 
-#External imports
+# External imports
 from PySide.QtCore import *
 from PySide.QtGui import *
 
-#Internal imports
+# Internal imports
 import helper
 import serieshelper
 
-
 class MainWidget(QWidget):
 
+    #########################
+    ### MAIN WINDOW SETUP ###
+    #########################
+
+    """ METHOD: Initialize MainWidget"""
     def __init__(self, parent=None):
         super(MainWidget, self).__init__(parent)
 
-        # Main Window
+        # Main Window / Set title, size & icon
         self.setWindowTitle("SeriesGrabber v0.1")
         self.setMinimumSize(900, 650)
         pixmap_window = QPixmap("data/icons/window.png")
@@ -24,84 +28,102 @@ class MainWidget(QWidget):
         self.setWindowIcon(icon_window)
         self.setPalette(self.getPalette("gw"))
 
-        # Initialize stacked widgets
+        # Main Window / Initialize widgets
         self.left_widget = QWidget()
         self.right_widget = QStackedWidget()
 
-        # Layouts
+        # Main Window / Create layouts
         self.main_layout = QHBoxLayout()
         self.left_layout = QVBoxLayout()
         self.right_layout = QVBoxLayout()
 
-        # Initialize layouts
+        # Main Window / Initialize layouts
         self.init_left_layout()
         self.init_right_layout()
         self.init_main_page_layout()
 
-
-        # Global variables
+        # Main Window / Set global variables
         self.current_series = ""
         self.current_season = -1
         self.current_episode = -1
 
-
-        # Set layouts
+        # Main Window / Set layouts
         self.main_layout.addWidget(self.left_widget)
         self.main_layout.addWidget(self.right_widget)
         self.main_layout.setSpacing(20)
         self.setLayout(self.main_layout)
 
-    ''' Left layout '''
+    #######################
+    ### LEFT SIDE SETUP ###
+    #######################
 
+    """ METHOD: Initialize left layout """
     def init_left_layout(self):
+        # Initialize main button, series box for series selection, "Add series..."-button
         self.init_main_button()
         self.init_series_box()
         self.init_add_button()
+
+        # Set layout and spacing
         self.left_layout.setSpacing(15)
         self.left_widget.setLayout(self.left_layout)
 
+    """ METHOD: Initialize main button """
     def init_main_button(self):
+        # Create main button, set size
         self.main_button = QPushButton()
         self.main_button.setFixedHeight(75)
+
+        # Create and set Icon for main button
         main_pixmap = QPixmap("data/icons/main.png")
         main_icon = QIcon(main_pixmap)
         self.main_button.setIcon(main_icon)
         self.main_button.setIconSize(QSize(65, 65))
+
+        # Create and set stylesheets for main button
         stylesheet_hover = "QPushButton:hover {background-color: lightgreen; border-width: 3px}"
         stylesheet_normal = "QPushButton {background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 5px}"
         self.main_button.setStyleSheet(stylesheet_normal + stylesheet_hover)
+
+        # Connect main button to slot and add main button to left layout
         self.main_button.clicked.connect(self.main_button_click)
         self.left_layout.addWidget(self.main_button)
 
+    """ METHOD: Initialize SeriesBox for series selection """
     def init_series_box(self):
-
-        # Widgets & Layout
+        # Create scroll area and layout, set size & alignment
         self.scroll_area = QScrollArea()
         self.series_layout = QVBoxLayout()
+        self.series_layout.setAlignment(Qt.AlignTop)
         self.scroll_area.setMinimumWidth(200)
 
-        # Open series_dict
+        # Open series_dict and loop through series in series.json
         series_dict = helper.series_dict()
         for series in series_dict.keys():
-            # Add push button
+            # Create button for each series
             button = QPushButton("{action}".format(action=series), self)
+            # Create and set stylesheets and size for series button
             stylesheet_hover = "QPushButton:hover {text-align: center; background-color: lightgreen; border-style: outset; border-width: 2px}"
             stylesheet_normal = "QPushButton {text-align: left; font: bold 12px; background-color: lightgrey; border-color: black; border-width: 0px; border-radius: 5px}"
             button.setMinimumHeight(30)
             button.setStyleSheet(stylesheet_normal + stylesheet_hover)
+            # Connect series button to slot and add to series layout
             button.clicked.connect(partial(self.series_button, action=series))
             self.series_layout.addWidget(button)
 
-        # Add to layout
-        self.series_layout.setAlignment(Qt.AlignTop)
+        # Add layout to scroll area, create & set stylesheets of scroll area, add scroll area to left layout
         self.scroll_area.setLayout(self.series_layout)
         scroll_area_stylesheet = "background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 5px"
         self.scroll_area.setStyleSheet(scroll_area_stylesheet)
         self.left_layout.addWidget(self.scroll_area)
 
+    """ METHOD: Initialize "Add series..."-button """
     def init_add_button(self):
+        # Create "Add series..."-button and set size
         self.add_button = QPushButton()
         self.add_button.setMinimumHeight(40)
+
+        # Create and set stylesheets, tool tip and icon of "Add series..."-button
         stylesheet_hover = "QPushButton:hover {background-color: lightgreen; border-width: 3px}"
         stylesheet_normal = "QPushButton {text-align: center; font: bold 12px; background-color: lightgrey; border-color: black; border-style: outset; border-width: 2px; border-radius: 5px}"
         pixmap_add = QPixmap("data/icons/add.png")
@@ -110,48 +132,18 @@ class MainWidget(QWidget):
         self.add_button.setIconSize(QSize(30, 30))
         self.add_button.setToolTip("Add new series to library...")
         self.add_button.setStyleSheet(stylesheet_hover + stylesheet_normal)
+
+        # Connect "Add series..."-button to slot and add to left layout
         self.add_button.clicked.connect(self.add_button_click)
         self.left_layout.addWidget(self.add_button)
 
+    ########################
+    ### RIGHT SIDE SETUP ###
+    ########################
 
-#   Slots
-    def series_button(self, action):
-        self.current_series = action
-        self.change_banner_pixmap()
-        self.change_description()
-        self.change_status_and_rating()
-        self.change_season_buttons()
-        self.change_episode_grid()
-        self.right_widget.setCurrentWidget(self.right_episode_widget)
-
-
-    def season_button(self, action):
-        self.current_season = action
-        if self.current_season == 0:
-            self.episode_grid_scroll.ensureVisible(0, 0)
-        else:
-            episodes = self.get_no_of_episodes_to_season()
-            step = 100 + 31 * episodes + 40 * (action-1)
-            self.episode_grid_scroll.ensureVisible(0, 100000)
-            self.episode_grid_scroll.ensureVisible(0, step)
-
-    def add_button_click(self):
-        self.init_add_series_widget()
-        self.finder.show()
-
-    def main_button_click(self):
-        self.right_widget.setCurrentWidget(self.main_page_scroll)
-
-
-    def download_click(self, action):
-        row = self.episode_grid.indexOf(action)/5
-        episode = int(self.episode_grid.itemAtPosition(row, 1).widget().text())
-        season = int(self.episode_grid.itemAtPosition(row, 0).widget().text())
-        print serieshelper.get_download_link(self.current_series, season, episode)
-
-    """ Right layout """
-
+    """ METHOD: Initialize right layout """
     def init_right_layout(self):
+        # Create episode widget (holds all contents of current series selection and is part of right side stacked widget)
         self.right_episode_widget = QWidget()
         self.right_layout.setAlignment(Qt.AlignTop)
         self.init_banner()
@@ -395,6 +387,53 @@ class MainWidget(QWidget):
             print "Exception (" + str(sys.exc_info()[0]) + ") in method 'change_episode_grid'"
             pass
 
+    ####################
+    ### SIGNAL SLOTS ###
+    ####################
+
+    """ SLOT: Used if a series in the series box is selected """
+    def series_button(self, action):
+
+        # Set current series if necessary
+        if action == self.current_series:
+            return None
+        else:
+            self.current_series = action
+
+        # Change banner, description, status & rating, season buttons and episode box of right layout
+        self.change_banner_pixmap()
+        self.change_description()
+        self.change_status_and_rating()
+        self.change_season_buttons()
+        self.change_episode_grid()
+
+        # Set current widget of stacked widget (right side) from main to episode widget
+        self.right_widget.setCurrentWidget(self.right_episode_widget)
+
+    """ SLOT: Used if one of the season buttons """
+    def season_button(self, action):
+        self.current_season = action
+        if self.current_season == 0:
+            self.episode_grid_scroll.ensureVisible(0, 0)
+        else:
+            episodes = self.get_no_of_episodes_to_season()
+            step = 100 + 31 * episodes + 40 * (action-1)
+            self.episode_grid_scroll.ensureVisible(0, 100000)
+            self.episode_grid_scroll.ensureVisible(0, step)
+
+    def add_button_click(self):
+        self.init_add_series_widget()
+        self.finder.show()
+
+    def main_button_click(self):
+        self.right_widget.setCurrentWidget(self.main_page_scroll)
+
+
+    def download_click(self, action):
+        row = self.episode_grid.indexOf(action)/5
+        episode = int(self.episode_grid.itemAtPosition(row, 1).widget().text())
+        season = int(self.episode_grid.itemAtPosition(row, 0).widget().text())
+        print serieshelper.get_download_link(self.current_series, season, episode)
     def change_episode_infobox(self, action):
         series_dict = helper.series_dict()
         row = self.episode_grid.indexOf(action)/5
@@ -456,7 +495,9 @@ class MainWidget(QWidget):
         self.right_widget.addWidget(self.main_page_scroll)
         self.right_widget.setCurrentWidget(self.main_page_scroll)
 
-    ''' Add series Widget '''
+    #########################
+    ### ADD SERIES WIDGET ###
+    #########################
 
     def init_add_series_widget(self):
         # Layout for finder window
@@ -507,7 +548,9 @@ class MainWidget(QWidget):
             results = serieshelper.get_search_results(searchstring)
             self.search_result_list.addItems(results)
 
-# Helper methods for GUI
+    ##########################
+    ### GUI HELPER METHODS ###
+    ##########################
 
     def clearLayout(self, layout):
         while layout.count():
@@ -535,6 +578,8 @@ class MainWidget(QWidget):
         palette = QPalette()
         palette.setBrush(QPalette.Background, pixmap)
         return palette
+
+###     END - CLASS OF MAIN WIDGET      ###
 
 if __name__ == '__main__':
 # Exception Handling
